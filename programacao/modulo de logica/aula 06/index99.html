@@ -1,0 +1,3885 @@
+Abaixo está o index.html completo, sem necessidade de servidor ou banco de dados. Ele usa apenas HTML + CSS + JavaScript + localStorage, então os dados ficam salvos automaticamente no navegador.
+
+Salve todo o conteúdo abaixo como index.html e abra no Chrome/Edge.
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#d9480f">
+<title>PastelPro — Custos e Preços</title>
+
+<style>
+:root{
+  --primary:#d9480f;
+  --primary-dark:#a9360b;
+  --secondary:#f59f00;
+  --bg:#f7f7f8;
+  --card:#ffffff;
+  --text:#252525;
+  --muted:#777;
+  --border:#e6e6e6;
+  --success:#2b8a3e;
+  --danger:#c92a2a;
+  --blue:#1971c2;
+  --shadow:0 4px 18px rgba(0,0,0,.07);
+  --radius:14px;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+button,input,select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.app{
+  display:flex;
+  min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  width:250px;
+  background:#202020;
+  color:white;
+  padding:20px 14px;
+  position:fixed;
+  top:0;
+  bottom:0;
+  left:0;
+  z-index:50;
+  overflow-y:auto;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 10px 24px;
+}
+
+.logo-icon{
+  width:42px;
+  height:42px;
+  background:var(--primary);
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  font-size:23px;
+}
+
+.logo strong{
+  display:block;
+  font-size:18px;
+}
+
+.logo small{
+  color:#aaa;
+}
+
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.nav button{
+  border:0;
+  background:transparent;
+  color:#bbb;
+  padding:13px 14px;
+  border-radius:10px;
+  text-align:left;
+  transition:.2s;
+}
+
+.nav button:hover,
+.nav button.active{
+  background:var(--primary);
+  color:#fff;
+}
+
+.nav button span{
+  margin-right:9px;
+}
+
+/* MAIN */
+
+.main{
+  margin-left:250px;
+  width:calc(100% - 250px);
+  min-height:100vh;
+}
+
+.topbar{
+  background:white;
+  border-bottom:1px solid var(--border);
+  padding:16px 28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position:sticky;
+  top:0;
+  z-index:30;
+}
+
+.topbar h1{
+  font-size:21px;
+}
+
+.topbar-right{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.content{
+  padding:28px;
+  max-width:1500px;
+  margin:auto;
+}
+
+/* BUTTONS */
+
+.btn{
+  border:0;
+  border-radius:9px;
+  padding:10px 15px;
+  font-weight:600;
+  transition:.2s;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+.btn-primary{
+  background:var(--primary);
+  color:white;
+}
+
+.btn-primary:hover{
+  background:var(--primary-dark);
+}
+
+.btn-secondary{
+  background:#f1f3f5;
+  color:#333;
+}
+
+.btn-success{
+  background:var(--success);
+  color:#fff;
+}
+
+.btn-danger{
+  background:#fff0f0;
+  color:var(--danger);
+}
+
+.btn-blue{
+  background:#e7f5ff;
+  color:var(--blue);
+}
+
+.btn-small{
+  padding:7px 10px;
+  font-size:13px;
+}
+
+/* CARDS */
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:22px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:20px;
+}
+
+.stat-card{
+  position:relative;
+  overflow:hidden;
+}
+
+.stat-card .icon{
+  position:absolute;
+  right:18px;
+  top:17px;
+  font-size:28px;
+}
+
+.stat-card .label{
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+.stat-card .value{
+  font-size:25px;
+  font-weight:800;
+}
+
+.stat-card .sub{
+  margin-top:5px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* GRID */
+
+.grid-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+}
+
+.grid-3{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:16px;
+}
+
+.section-title h2{
+  font-size:20px;
+}
+
+.section-title p{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:3px;
+}
+
+/* FORMS */
+
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+
+.form-grid-3{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+
+.form-group{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.form-group.full{
+  grid-column:1/-1;
+}
+
+label{
+  font-size:13px;
+  font-weight:700;
+}
+
+input,select{
+  width:100%;
+  border:1px solid #d7d7d7;
+  border-radius:9px;
+  padding:11px 12px;
+  background:white;
+  outline:none;
+  transition:.2s;
+}
+
+input:focus,select:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(217,72,15,.1);
+}
+
+.help{
+  font-size:11px;
+  color:var(--muted);
+}
+
+/* TABLE */
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:650px;
+}
+
+th,td{
+  text-align:left;
+  padding:12px 10px;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+
+th{
+  color:#666;
+  font-size:12px;
+  text-transform:uppercase;
+  background:#fafafa;
+}
+
+td strong{
+  font-weight:700;
+}
+
+.actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+/* TOOLBAR */
+
+.toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:15px;
+  flex-wrap:wrap;
+}
+
+.search{
+  max-width:350px;
+}
+
+/* BADGES */
+
+.badge{
+  display:inline-flex;
+  padding:4px 8px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:700;
+}
+
+.badge-orange{
+  background:#fff4e6;
+  color:#d9480f;
+}
+
+.badge-green{
+  background:#ebfbee;
+  color:#2b8a3e;
+}
+
+.badge-blue{
+  background:#e7f5ff;
+  color:#1971c2;
+}
+
+/* PRICE BOX */
+
+.price-box{
+  background:linear-gradient(135deg,#d9480f,#f76707);
+  color:white;
+  border-radius:16px;
+  padding:25px;
+}
+
+.price-box .small{
+  opacity:.8;
+  font-size:13px;
+}
+
+.price-box .big{
+  font-size:38px;
+  font-weight:900;
+  margin:5px 0;
+}
+
+.price-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:18px;
+}
+
+.price-stat{
+  background:rgba(255,255,255,.14);
+  padding:12px;
+  border-radius:10px;
+}
+
+.price-stat span{
+  display:block;
+  font-size:11px;
+  opacity:.8;
+}
+
+.price-stat strong{
+  font-size:18px;
+}
+
+/* RECIPE INGREDIENT */
+
+.recipe-line{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr auto;
+  gap:8px;
+  align-items:end;
+  padding:10px;
+  background:#fafafa;
+  border:1px solid var(--border);
+  border-radius:10px;
+  margin-bottom:8px;
+}
+
+.recipe-lines{
+  margin-top:15px;
+}
+
+.recipe-total{
+  display:flex;
+  justify-content:flex-end;
+  gap:30px;
+  margin-top:15px;
+  padding-top:15px;
+  border-top:2px solid var(--border);
+  font-size:17px;
+}
+
+/* COSTS */
+
+.cost-line{
+  display:grid;
+  grid-template-columns:1.5fr 1fr 1fr auto;
+  gap:8px;
+  align-items:end;
+  margin-bottom:8px;
+}
+
+/* EMPTY */
+
+.empty{
+  text-align:center;
+  padding:45px 20px;
+  color:var(--muted);
+}
+
+.empty .empty-icon{
+  font-size:45px;
+  margin-bottom:10px;
+}
+
+/* TOAST */
+
+#toastContainer{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  z-index:1000;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.toast{
+  min-width:280px;
+  max-width:400px;
+  padding:14px 16px;
+  border-radius:10px;
+  color:white;
+  box-shadow:0 8px 25px rgba(0,0,0,.2);
+  animation:slideIn .25s ease;
+}
+
+.toast.success{background:var(--success)}
+.toast.error{background:var(--danger)}
+.toast.info{background:#343a40}
+
+@keyframes slideIn{
+  from{transform:translateX(120%);opacity:0}
+  to{transform:translateX(0);opacity:1}
+}
+
+/* MODAL */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:500;
+  padding:20px;
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modal-box{
+  background:white;
+  border-radius:16px;
+  width:min(900px,100%);
+  max-height:90vh;
+  overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+
+.modal-header{
+  padding:18px 22px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.modal-header h3{
+  font-size:18px;
+}
+
+.modal-body{
+  padding:22px;
+}
+
+.modal-footer{
+  padding:16px 22px;
+  border-top:1px solid var(--border);
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+}
+
+/* SECTIONS */
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+.info{
+  padding:12px 14px;
+  background:#fff9db;
+  border-left:4px solid #fab005;
+  border-radius:6px;
+  font-size:13px;
+  margin-bottom:15px;
+}
+
+.success-box{
+  padding:14px;
+  background:#ebfbee;
+  color:#237b35;
+  border-radius:9px;
+}
+
+.danger-box{
+  padding:14px;
+  background:#fff5f5;
+  color:#c92a2a;
+  border-radius:9px;
+}
+
+/* MOBILE */
+
+.mobile-menu{
+  display:none;
+  border:0;
+  background:#f1f3f5;
+  padding:8px 10px;
+  border-radius:8px;
+}
+
+@media(max-width:1100px){
+  .cards{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .grid-3{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media(max-width:800px){
+  .sidebar{
+    transform:translateX(-100%);
+    transition:.25s;
+  }
+
+  .sidebar.open{
+    transform:translateX(0);
+  }
+
+  .main{
+    margin-left:0;
+    width:100%;
+  }
+
+  .mobile-menu{
+    display:block;
+  }
+
+  .content{
+    padding:18px;
+  }
+
+  .topbar{
+    padding:12px 18px;
+  }
+
+  .grid-2,
+  .grid-3,
+  .form-grid,
+  .form-grid-3{
+    grid-template-columns:1fr;
+  }
+
+  .cards{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .recipe-line{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .recipe-line .line-name{
+    grid-column:1/-1;
+  }
+
+  .cost-line{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .price-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:500px){
+  .cards{
+    grid-template-columns:1fr;
+  }
+
+  .topbar-right .date{
+    display:none;
+  }
+
+  .content{
+    padding:13px;
+  }
+
+  .card{
+    padding:15px;
+  }
+
+  .price-box .big{
+    font-size:31px;
+  }
+}
+
+/* PRINT */
+
+@media print{
+  .sidebar,
+  .topbar,
+  .no-print,
+  .actions,
+  .toolbar{
+    display:none!important;
+  }
+
+  .main{
+    margin:0;
+    width:100%;
+  }
+
+  .content{
+    padding:0;
+  }
+
+  .page{
+    display:none!important;
+  }
+
+  #page-relatorios{
+    display:block!important;
+  }
+
+  body{
+    background:white;
+  }
+
+  .card{
+    box-shadow:none;
+    border:1px solid #ddd;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+
+  <div class="logo">
+    <div class="logo-icon">🥟</div>
+    <div>
+      <strong>PastelPro</strong>
+      <small>Custos & Preços</small>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <button class="active" data-page="dashboard">
+      <span>📊</span> Dashboard
+    </button>
+
+    <button data-page="ingredientes">
+      <span>🥩</span> Ingredientes
+    </button>
+
+    <button data-page="receitas">
+      <span>🥟</span> Receitas
+    </button>
+
+    <button data-page="precos">
+      <span>💰</span> Preço de Venda
+    </button>
+
+    <button data-page="relatorios">
+      <span>📄</span> Relatórios
+    </button>
+
+    <button data-page="backup">
+      <span>💾</span> Backup / Dados
+    </button>
+  </nav>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+<header class="topbar">
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="mobile-menu" id="mobileMenu">☰</button>
+    <div>
+      <h1 id="pageTitle">Dashboard</h1>
+      <small id="pageSubtitle" style="color:#777">
+        Visão geral da sua pastelaria
+      </small>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <span class="date" style="font-size:13px;color:#777" id="currentDate"></span>
+    <button class="btn btn-primary btn-small" onclick="openIngredientModal()">
+      + Ingrediente
+    </button>
+  </div>
+</header>
+
+<div class="content">
+
+<!-- ================= DASHBOARD ================= -->
+<section class="page active" id="page-dashboard">
+
+  <div class="cards">
+
+    <div class="card stat-card">
+      <div class="icon">🥩</div>
+      <div class="label">Ingredientes cadastrados</div>
+      <div class="value" id="dashIngredients">0</div>
+      <div class="sub">Itens disponíveis</div>
+    </div>
+
+    <div class="card stat-card">
+      <div class="icon">🥟</div>
+      <div class="label">Receitas cadastradas</div>
+      <div class="value" id="dashRecipes">0</div>
+      <div class="sub">Receitas salvas</div>
+    </div>
+
+    <div class="card stat-card">
+      <div class="icon">💵</div>
+      <div class="label">Custo médio / unidade</div>
+      <div class="value" id="dashAverage">R$ 0,00</div>
+      <div class="sub">Entre as receitas</div>
+    </div>
+
+    <div class="card stat-card">
+      <div class="icon">📈</div>
+      <div class="label">Lucro estimado</div>
+      <div class="value" id="dashProfit">R$ 0,00</div>
+      <div class="sub">Receita selecionada</div>
+    </div>
+
+  </div>
+
+  <div class="grid-2">
+
+    <div class="card">
+      <div class="section-title">
+        <div>
+          <h2>Resumo da receita</h2>
+          <p>Selecione uma receita para visualizar os valores.</p>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Receita selecionada</label>
+        <select id="dashboardRecipe" onchange="updateDashboard()">
+          <option value="">Nenhuma receita</option>
+        </select>
+      </div>
+
+      <div id="dashboardRecipeInfo" style="margin-top:18px">
+        <div class="empty">
+          <div class="empty-icon">🥟</div>
+          <p>Cadastre uma receita para começar.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">
+        <div>
+          <h2>Indicadores</h2>
+          <p>Resumo financeiro da receita.</p>
+        </div>
+      </div>
+
+      <div class="grid-2">
+
+        <div class="success-box">
+          <small>Custo por unidade</small>
+          <h2 id="dashCostUnit">R$ 0,00</h2>
+        </div>
+
+        <div class="success-box">
+          <small>Preço sugerido</small>
+          <h2 id="dashSalePrice">R$ 0,00</h2>
+        </div>
+
+        <div class="info">
+          <small>Lucro por unidade</small>
+          <h2 id="dashProfitUnit">R$ 0,00</h2>
+        </div>
+
+        <div class="info">
+          <small>Margem</small>
+          <h2 id="dashMargin">0%</h2>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- ================= INGREDIENTES ================= -->
+<section class="page" id="page-ingredientes">
+
+  <div class="section-title">
+    <div>
+      <h2>Ingredientes</h2>
+      <p>Cadastre o preço dos produtos comprados pela sua pastelaria.</p>
+    </div>
+
+    <button class="btn btn-primary" onclick="openIngredientModal()">
+      + Novo ingrediente
+    </button>
+  </div>
+
+  <div class="card">
+
+    <div class="toolbar">
+      <input
+        class="search"
+        id="ingredientSearch"
+        placeholder="🔎 Pesquisar ingrediente..."
+        oninput="renderIngredients()"
+      >
+
+      <select id="ingredientSort" onchange="renderIngredients()" style="max-width:220px">
+        <option value="name">Ordenar por nome</option>
+        <option value="cost">Maior preço</option>
+        <option value="costAsc">Menor preço</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Ingrediente</th>
+            <th>Tipo de compra</th>
+            <th>Preço</th>
+            <th>Preço base</th>
+            <th>Atualizado</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="ingredientsTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= RECEITAS ================= -->
+<section class="page" id="page-receitas">
+
+  <div class="section-title">
+    <div>
+      <h2>Receitas</h2>
+      <p>Monte suas receitas e descubra quanto custa cada pastel.</p>
+    </div>
+
+    <button class="btn btn-primary" onclick="openRecipeModal()">
+      + Nova receita
+    </button>
+  </div>
+
+  <div class="card">
+
+    <div class="toolbar">
+      <input
+        class="search"
+        id="recipeSearch"
+        placeholder="🔎 Pesquisar receita..."
+        oninput="renderRecipes()"
+      >
+
+      <select id="recipeSort" onchange="renderRecipes()" style="max-width:220px">
+        <option value="name">Ordenar por nome</option>
+        <option value="cost">Maior custo</option>
+        <option value="costAsc">Menor custo</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Receita</th>
+            <th>Produção</th>
+            <th>Ingredientes</th>
+            <th>Custo total</th>
+            <th>Custo/un.</th>
+            <th>Preço venda</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+
+        <tbody id="recipesTable"></tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= PREÇOS ================= -->
+<section class="page" id="page-precos">
+
+  <div class="section-title">
+    <div>
+      <h2>Formação de preço</h2>
+      <p>Defina sua margem ou acréscimo e descubra o preço ideal.</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+
+    <div class="card">
+
+      <div class="form-grid">
+
+        <div class="form-group full">
+          <label>Receita</label>
+          <select id="priceRecipe" onchange="calculatePricePage()">
+            <option value="">Selecione uma receita</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Modo de cálculo</label>
+
+          <select id="priceMethod" onchange="calculatePricePage()">
+            <option value="markup">Acréscimo sobre o custo</option>
+            <option value="margin">Margem sobre o preço de venda</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label id="percentageLabel">Acréscimo desejado (%)</label>
+          <input
+            type="number"
+            id="pricePercentage"
+            min="0"
+            step="0.01"
+            value="100"
+            oninput="calculatePricePage()"
+          >
+        </div>
+
+      </div>
+
+      <hr style="border:0;border-top:1px solid var(--border);margin:22px 0">
+
+      <div class="section-title">
+        <div>
+          <h2>Custos adicionais</h2>
+          <p>Inclua gastos que entram no custo do pastel.</p>
+        </div>
+
+        <button class="btn btn-secondary btn-small" onclick="addPriceCost()">
+          + Adicionar
+        </button>
+      </div>
+
+      <div id="priceCosts"></div>
+
+      <div class="info" style="margin-top:15px">
+        <strong>Diferença importante:</strong><br>
+        Acréscimo de 100% dobra o custo.
+        Margem de 50% significa que metade do preço final é lucro.
+      </div>
+
+    </div>
+
+    <div>
+
+      <div class="price-box">
+
+        <div class="small">PREÇO DE VENDA SUGERIDO</div>
+
+        <div class="big" id="priceResult">
+          R$ 0,00
+        </div>
+
+        <div id="priceExplanation">
+          Selecione uma receita para calcular.
+        </div>
+
+        <div class="price-grid">
+
+          <div class="price-stat">
+            <span>Custo total/un.</span>
+            <strong id="priceCost">R$ 0,00</strong>
+          </div>
+
+          <div class="price-stat">
+            <span>Lucro/un.</span>
+            <strong id="priceProfit">R$ 0,00</strong>
+          </div>
+
+          <div class="price-stat">
+            <span>Margem real</span>
+            <strong id="priceMargin">0%</strong>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="card" style="margin-top:18px">
+
+        <div class="section-title">
+          <div>
+            <h2>Detalhamento</h2>
+            <p>Veja como o preço foi formado.</p>
+          </div>
+        </div>
+
+        <div id="priceDetails">
+          <div class="empty">
+            <div class="empty-icon">💰</div>
+            <p>Selecione uma receita.</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= RELATÓRIOS ================= -->
+<section class="page" id="page-relatorios">
+
+  <div class="section-title no-print">
+    <div>
+      <h2>Relatórios</h2>
+      <p>Gere um relatório completo dos custos e preços.</p>
+    </div>
+
+    <button class="btn btn-primary" onclick="window.print()">
+      🖨 Imprimir
+    </button>
+  </div>
+
+  <div class="card">
+
+    <div class="form-group no-print" style="max-width:400px;margin-bottom:20px">
+      <label>Selecione a receita</label>
+      <select id="reportRecipe" onchange="renderReport()">
+        <option value="">Selecione</option>
+      </select>
+    </div>
+
+    <div id="reportContent">
+      <div class="empty">
+        <div class="empty-icon">📄</div>
+        <p>Selecione uma receita para gerar o relatório.</p>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- ================= BACKUP ================= -->
+<section class="page" id="page-backup">
+
+  <div class="section-title">
+    <div>
+      <h2>Backup e dados</h2>
+      <p>Seus dados ficam salvos neste navegador.</p>
+    </div>
+  </div>
+
+  <div class="grid-2">
+
+    <div class="card">
+
+      <div class="section-title">
+        <div>
+          <h2>💾 Backup</h2>
+          <p>Recomendamos fazer backup regularmente.</p>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="exportData()">
+          ⬇ Exportar dados
+        </button>
+
+        <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">
+          ⬆ Importar dados
+        </button>
+
+        <input
+          type="file"
+          id="importFile"
+          accept=".json,application/json"
+          style="display:none"
+          onchange="importData(event)"
+        >
+      </div>
+
+      <div class="info" style="margin-top:18px">
+        O arquivo JSON contém seus ingredientes, receitas e configurações.
+        Guarde-o em local seguro.
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="section-title">
+        <div>
+          <h2>⚠️ Zona de segurança</h2>
+          <p>Use esta opção com cuidado.</p>
+        </div>
+      </div>
+
+      <div class="danger-box">
+        <strong>Apagar todos os dados</strong>
+        <p style="margin:6px 0 12px">
+          Todos os ingredientes e receitas serão removidos deste navegador.
+        </p>
+
+        <button class="btn btn-danger" onclick="clearAllData()">
+          🗑 Apagar tudo
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="card" style="margin-top:20px">
+
+    <div class="section-title">
+      <div>
+        <h2>Status do armazenamento</h2>
+        <p>Informações sobre seus dados locais.</p>
+      </div>
+    </div>
+
+    <div class="grid-3">
+
+      <div>
+        <strong>Ingredientes</strong>
+        <div id="backupIngredients">0</div>
+      </div>
+
+      <div>
+        <strong>Receitas</strong>
+        <div id="backupRecipes">0</div>
+      </div>
+
+      <div>
+        <strong>Último salvamento</strong>
+        <div id="lastSaved">Agora</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+</div>
+</main>
+</div>
+
+<!-- ================= INGREDIENT MODAL ================= -->
+
+<div class="modal" id="ingredientModal">
+
+<div class="modal-box">
+
+  <div class="modal-header">
+    <h3 id="ingredientModalTitle">Novo ingrediente</h3>
+
+    <button class="btn btn-secondary btn-small" onclick="closeModal('ingredientModal')">
+      ✕
+    </button>
+  </div>
+
+  <div class="modal-body">
+
+    <input type="hidden" id="ingredientId">
+
+    <div class="form-grid">
+
+      <div class="form-group full">
+        <label>Nome do ingrediente *</label>
+        <input id="ingredientName" placeholder="Ex.: Carne moída">
+      </div>
+
+      <div class="form-group">
+        <label>Tipo de compra *</label>
+
+        <select id="ingredientType" onchange="updateIngredientForm()">
+          <option value="kg">Comprado por kg</option>
+          <option value="unit">Comprado por unidade</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label id="ingredientPriceLabel">Preço de compra por kg *</label>
+
+        <input
+          type="number"
+          id="ingredientPrice"
+          min="0"
+          step="0.0001"
+          placeholder="0,00"
+        >
+      </div>
+
+      <div class="form-group">
+        <label id="ingredientUnitLabel">Unidade da receita</label>
+
+        <select id="ingredientRecipeUnit">
+          <option value="g">Gramas (g)</option>
+          <option value="kg">Quilogramas (kg)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Observação</label>
+        <input id="ingredientNote" placeholder="Opcional">
+      </div>
+
+    </div>
+
+    <div class="info" style="margin-top:18px">
+      <strong>Exemplo:</strong> se a carne custa R$ 40,00/kg e você
+      utilizar 250 g na receita, o sistema calculará automaticamente
+      R$ 10,00 de custo.
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+    <button class="btn btn-secondary" onclick="closeModal('ingredientModal')">
+      Cancelar
+    </button>
+
+    <button class="btn btn-primary" onclick="saveIngredient()">
+      Salvar ingrediente
+    </button>
+  </div>
+
+</div>
+</div>
+
+<!-- ================= RECIPE MODAL ================= -->
+
+<div class="modal" id="recipeModal">
+
+<div class="modal-box">
+
+  <div class="modal-header">
+    <h3 id="recipeModalTitle">Nova receita</h3>
+
+    <button class="btn btn-secondary btn-small" onclick="closeModal('recipeModal')">
+      ✕
+    </button>
+  </div>
+
+  <div class="modal-body">
+
+    <input type="hidden" id="recipeId">
+
+    <div class="form-grid">
+
+      <div class="form-group">
+        <label>Nome da receita *</label>
+        <input id="recipeName" placeholder="Ex.: Pastel de Carne">
+      </div>
+
+      <div class="form-group">
+        <label>Quantidade produzida *</label>
+        <input
+          type="number"
+          id="recipeYield"
+          min="1"
+          step="1"
+          value="10"
+        >
+        <span class="help">Quantidade de pastéis produzidos.</span>
+      </div>
+
+    </div>
+
+    <div style="margin-top:25px">
+
+      <div class="section-title">
+        <div>
+          <h2>Ingredientes da receita</h2>
+          <p>Informe quanto de cada ingrediente será utilizado.</p>
+        </div>
+
+        <button class="btn btn-secondary btn-small" onclick="addRecipeLine()">
+          + Ingrediente
+        </button>
+      </div>
+
+      <div id="recipeLines" class="recipe-lines"></div>
+
+      <div class="recipe-total">
+        <span>Custo dos ingredientes:</span>
+        <strong id="recipeIngredientTotal">R$ 0,00</strong>
+      </div>
+
+    </div>
+
+    <div style="margin-top:25px">
+
+      <div class="section-title">
+        <div>
+          <h2>Custos indiretos</h2>
+          <p>Gás, energia, embalagem, mão de obra, taxas etc.</p>
+        </div>
+
+        <button class="btn btn-secondary btn-small" onclick="addRecipeCost()">
+          + Custo
+        </button>
+      </div>
+
+      <div id="recipeCosts"></div>
+
+      <div class="recipe-total">
+        <span>Custos indiretos:</span>
+        <strong id="recipeIndirectTotal">R$ 0,00</strong>
+      </div>
+
+    </div>
+
+    <div class="price-box" style="margin-top:20px">
+      <div class="small">CUSTO DA RECEITA</div>
+      <div class="big" id="recipeTotal">R$ 0,00</div>
+
+      <div class="price-grid">
+        <div class="price-stat">
+          <span>Produção</span>
+          <strong id="recipeYieldPreview">0</strong>
+        </div>
+
+        <div class="price-stat">
+          <span>Custo/unidade</span>
+          <strong id="recipeUnitCost">R$ 0,00</strong>
+        </div>
+
+        <div class="price-stat">
+          <span>Preço sugerido</span>
+          <strong id="recipeSuggestedPrice">R$ 0,00</strong>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="modal-footer">
+
+    <button class="btn btn-secondary" onclick="closeModal('recipeModal')">
+      Cancelar
+    </button>
+
+    <button class="btn btn-primary" onclick="saveRecipe()">
+      Salvar receita
+    </button>
+
+  </div>
+
+</div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script>
+/* ============================================================
+   PASTELPRO
+   Sistema de custos e formação de preços
+   HTML + CSS + JavaScript puro
+   ============================================================ */
+
+const STORAGE_KEY = "pastelpro_data_v1";
+
+let data = {
+  ingredients: [],
+  recipes: [],
+  settings: {
+    defaultMarkup: 100
+  },
+  lastSaved: null
+};
+
+let priceCosts = [];
+
+/* ============================================================
+   UTILITÁRIOS
+   ============================================================ */
+
+function uid(prefix = "id"){
+  return prefix + "_" + Date.now().toString(36) +
+    "_" + Math.random().toString(36).slice(2,9);
+}
+
+function number(value){
+  const n = Number(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function money(value){
+  value = number(value);
+
+  return value.toLocaleString("pt-BR",{
+    style:"currency",
+    currency:"BRL"
+  });
+}
+
+function percent(value){
+  return number(value).toLocaleString("pt-BR",{
+    minimumFractionDigits:0,
+    maximumFractionDigits:2
+  }) + "%";
+}
+
+function escapeHtml(value){
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+/* ============================================================
+   LOCAL STORAGE
+   ============================================================ */
+
+function saveData(){
+  data.lastSaved = new Date().toISOString();
+
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify(data)
+  );
+
+  updateBackupStatus();
+}
+
+function loadData(){
+
+  try{
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if(saved){
+
+      const parsed = JSON.parse(saved);
+
+      data = {
+        ingredients:Array.isArray(parsed.ingredients)
+          ? parsed.ingredients : [],
+
+        recipes:Array.isArray(parsed.recipes)
+          ? parsed.recipes : [],
+
+        settings:parsed.settings || {
+          defaultMarkup:100
+        },
+
+        lastSaved:parsed.lastSaved || null
+      };
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+    showToast(
+      "Não foi possível carregar os dados salvos.",
+      "error"
+    );
+  }
+}
+
+/* ============================================================
+   NAVEGAÇÃO
+   ============================================================ */
+
+const pageTitles = {
+  dashboard:[
+    "Dashboard",
+    "Visão geral da sua pastelaria"
+  ],
+
+  ingredientes:[
+    "Ingredientes",
+    "Controle dos preços de compra"
+  ],
+
+  receitas:[
+    "Receitas",
+    "Custos de produção"
+  ],
+
+  precos:[
+    "Preço de Venda",
+    "Formação do preço ideal"
+  ],
+
+  relatorios:[
+    "Relatórios",
+    "Custos e resultados"
+  ],
+
+  backup:[
+    "Backup / Dados",
+    "Proteção dos seus dados"
+  ]
+};
+
+document.querySelectorAll(".nav button").forEach(button => {
+
+  button.addEventListener("click", () => {
+
+    navigate(button.dataset.page);
+
+    document.getElementById("sidebar").classList.remove("open");
+  });
+
+});
+
+function navigate(page){
+
+  document.querySelectorAll(".page").forEach(section => {
+    section.classList.remove("active");
+  });
+
+  const target = document.getElementById("page-" + page);
+
+  if(target){
+    target.classList.add("active");
+  }
+
+  document.querySelectorAll(".nav button").forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.page === page
+    );
+  });
+
+  document.getElementById("pageTitle").textContent =
+    pageTitles[page][0];
+
+  document.getElementById("pageSubtitle").textContent =
+    pageTitles[page][1];
+
+  refreshAll();
+
+}
+
+document.getElementById("mobileMenu").addEventListener("click",() => {
+  document.getElementById("sidebar").classList.toggle("open");
+});
+
+/* ============================================================
+   INGREDIENTES
+   ============================================================ */
+
+function openIngredientModal(id = null){
+
+  document.getElementById("ingredientId").value = "";
+  document.getElementById("ingredientName").value = "";
+  document.getElementById("ingredientPrice").value = "";
+  document.getElementById("ingredientType").value = "kg";
+  document.getElementById("ingredientRecipeUnit").value = "g";
+  document.getElementById("ingredientNote").value = "";
+
+  document.getElementById("ingredientModalTitle").textContent =
+    "Novo ingrediente";
+
+  if(id){
+
+    const ingredient = data.ingredients.find(i => i.id === id);
+
+    if(!ingredient) return;
+
+    document.getElementById("ingredientId").value = ingredient.id;
+    document.getElementById("ingredientName").value = ingredient.name;
+    document.getElementById("ingredientPrice").value = ingredient.price;
+    document.getElementById("ingredientType").value = ingredient.type;
+    document.getElementById("ingredientRecipeUnit").value =
+      ingredient.recipeUnit || (ingredient.type === "kg" ? "g" : "un");
+    document.getElementById("ingredientNote").value =
+      ingredient.note || "";
+
+    document.getElementById("ingredientModalTitle").textContent =
+      "Editar ingrediente";
+  }
+
+  updateIngredientForm();
+
+  document.getElementById("ingredientModal").classList.add("show");
+}
+
+function updateIngredientForm(){
+
+  const type = document.getElementById("ingredientType").value;
+
+  const priceLabel =
+    document.getElementById("ingredientPriceLabel");
+
+  const unitSelect =
+    document.getElementById("ingredientRecipeUnit");
+
+  if(type === "kg"){
+
+    priceLabel.textContent =
+      "Preço de compra por kg *";
+
+    unitSelect.innerHTML = `
+      <option value="g">Gramas (g)</option>
+      <option value="kg">Quilogramas (kg)</option>
+    `;
+
+  }else{
+
+    priceLabel.textContent =
+      "Preço de compra por unidade *";
+
+    unitSelect.innerHTML = `
+      <option value="un">Unidade</option>
+    `;
+  }
+}
+
+function saveIngredient(){
+
+  const id =
+    document.getElementById("ingredientId").value;
+
+  const name =
+    document.getElementById("ingredientName").value.trim();
+
+  const type =
+    document.getElementById("ingredientType").value;
+
+  const price =
+    number(document.getElementById("ingredientPrice").value);
+
+  const recipeUnit =
+    document.getElementById("ingredientRecipeUnit").value;
+
+  const note =
+    document.getElementById("ingredientNote").value.trim();
+
+  if(!name){
+
+    showToast("Informe o nome do ingrediente.","error");
+    return;
+  }
+
+  if(price <= 0){
+
+    showToast("Informe um preço maior que zero.","error");
+    return;
+  }
+
+  if(id){
+
+    const ingredient =
+      data.ingredients.find(i => i.id === id);
+
+    if(ingredient){
+
+      ingredient.name = name;
+      ingredient.type = type;
+      ingredient.price = price;
+      ingredient.recipeUnit = recipeUnit;
+      ingredient.note = note;
+      ingredient.updatedAt = new Date().toISOString();
+    }
+
+    showToast("Ingrediente atualizado!","success");
+
+  }else{
+
+    data.ingredients.push({
+
+      id:uid("ing"),
+
+      name,
+
+      type,
+
+      price,
+
+      recipeUnit,
+
+      note,
+
+      createdAt:new Date().toISOString(),
+
+      updatedAt:new Date().toISOString()
+
+    });
+
+    showToast("Ingrediente cadastrado!","success");
+  }
+
+  saveData();
+
+  closeModal("ingredientModal");
+
+  refreshAll();
+}
+
+function deleteIngredient(id){
+
+  const ingredient =
+    data.ingredients.find(i => i.id === id);
+
+  if(!ingredient) return;
+
+  const used =
+    data.recipes.some(recipe =>
+      recipe.ingredients.some(item =>
+        item.ingredientId === id
+      )
+    );
+
+  let message =
+    `Excluir "${ingredient.name}"?`;
+
+  if(used){
+
+    message +=
+      "\n\nEste ingrediente está sendo usado em uma ou mais receitas.";
+  }
+
+  if(!confirm(message)) return;
+
+  data.ingredients =
+    data.ingredients.filter(i => i.id !== id);
+
+  saveData();
+
+  renderIngredients();
+
+  showToast("Ingrediente excluído.","success");
+}
+
+function ingredientBasePrice(ingredient){
+
+  if(!ingredient) return 0;
+
+  return number(ingredient.price);
+}
+
+function calculateIngredientCost(ingredient, quantity){
+
+  if(!ingredient) return 0;
+
+  quantity = number(quantity);
+
+  if(quantity <= 0) return 0;
+
+  if(ingredient.type === "kg"){
+
+    if(ingredient.recipeUnit === "kg"){
+      return quantity * ingredient.price;
+    }
+
+    return (quantity / 1000) * ingredient.price;
+  }
+
+  return quantity * ingredient.price;
+}
+
+function ingredientUnitLabel(ingredient){
+
+  if(!ingredient) return "";
+
+  if(ingredient.type === "kg"){
+
+    return ingredient.recipeUnit === "kg"
+      ? "kg"
+      : "g";
+  }
+
+  return "un";
+}
+
+function renderIngredients(){
+
+  const tbody =
+    document.getElementById("ingredientsTable");
+
+  let list = [...data.ingredients];
+
+  const search =
+    document.getElementById("ingredientSearch")?.value
+      .toLowerCase()
+      .trim() || "";
+
+  const sort =
+    document.getElementById("ingredientSort")?.value || "name";
+
+  if(search){
+
+    list = list.filter(item =>
+      item.name.toLowerCase().includes(search)
+    );
+  }
+
+  if(sort === "name"){
+    list.sort((a,b) =>
+      a.name.localeCompare(b.name,"pt-BR")
+    );
+  }
+
+  if(sort === "cost"){
+    list.sort((a,b) => b.price - a.price);
+  }
+
+  if(sort === "costAsc"){
+    list.sort((a,b) => a.price - b.price);
+  }
+
+  if(!list.length){
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6">
+          <div class="empty">
+            <div class="empty-icon">🥩</div>
+            <p>Nenhum ingrediente cadastrado.</p>
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+  tbody.innerHTML = list.map(item => {
+
+    const typeText =
+      item.type === "kg"
+        ? "Por kg"
+        : "Por unidade";
+
+    const priceText =
+      item.type === "kg"
+        ? `${money(item.price)}/kg`
+        : `${money(item.price)}/un`;
+
+    const base =
+      item.type === "kg"
+        ? `${money(item.price)} / kg`
+        : `${money(item.price)} / un`;
+
+    const date =
+      item.updatedAt
+        ? new Date(item.updatedAt).toLocaleDateString("pt-BR")
+        : "-";
+
+    return `
+      <tr>
+
+        <td>
+          <strong>${escapeHtml(item.name)}</strong>
+          ${item.note
+            ? `<div class="help">${escapeHtml(item.note)}</div>`
+            : ""}
+        </td>
+
+        <td>
+          <span class="badge badge-orange">
+            ${typeText}
+          </span>
+        </td>
+
+        <td>
+          <strong>${priceText}</strong>
+        </td>
+
+        <td>${base}</td>
+
+        <td>${date}</td>
+
+        <td>
+          <div class="actions">
+
+            <button
+              class="btn btn-blue btn-small"
+              onclick="openIngredientModal('${item.id}')">
+              Editar
+            </button>
+
+            <button
+              class="btn btn-danger btn-small"
+              onclick="deleteIngredient('${item.id}')">
+              Excluir
+            </button>
+
+          </div>
+        </td>
+
+      </tr>
+    `;
+
+  }).join("");
+}
+
+/* ============================================================
+   RECEITAS
+   ============================================================ */
+
+function openRecipeModal(id = null){
+
+  document.getElementById("recipeId").value = "";
+  document.getElementById("recipeName").value = "";
+  document.getElementById("recipeYield").value = 10;
+
+  document.getElementById("recipeLines").innerHTML = "";
+  document.getElementById("recipeCosts").innerHTML = "";
+
+  document.getElementById("recipeModalTitle").textContent =
+    "Nova receita";
+
+  if(id){
+
+    const recipe =
+      data.recipes.find(r => r.id === id);
+
+    if(!recipe) return;
+
+    document.getElementById("recipeId").value = recipe.id;
+    document.getElementById("recipeName").value = recipe.name;
+    document.getElementById("recipeYield").value = recipe.yield;
+
+    document.getElementById("recipeModalTitle").textContent =
+      "Editar receita";
+
+    recipe.ingredients.forEach(item => {
+      addRecipeLine(item);
+    });
+
+    (recipe.indirectCosts || []).forEach(cost => {
+      addRecipeCost(cost);
+    });
+
+  }else{
+
+    if(data.ingredients.length){
+      addRecipeLine();
+    }
+  }
+
+  calculateRecipeModal();
+
+  document.getElementById("recipeModal").classList.add("show");
+}
+
+function addRecipeLine(existing = null){
+
+  if(!data.ingredients.length){
+
+    showToast(
+      "Cadastre pelo menos um ingrediente antes de criar a receita.",
+      "error"
+    );
+
+    return;
+  }
+
+  const container =
+    document.getElementById("recipeLines");
+
+  const line = document.createElement("div");
+
+  line.className = "recipe-line";
+
+  const options = data.ingredients
+    .map(ingredient => `
+      <option
+        value="${ingredient.id}"
+        ${existing &&
+          existing.ingredientId === ingredient.id
+          ? "selected"
+          : ""}>
+        ${escapeHtml(ingredient.name)}
+      </option>
+    `)
+    .join("");
+
+  line.innerHTML = `
+
+    <div class="form-group line-name">
+
+      <label>Ingrediente</label>
+
+      <select class="recipe-ingredient"
+        onchange="updateRecipeLine(this);calculateRecipeModal()">
+
+        <option value="">Selecione</option>
+
+        ${options}
+
+      </select>
+
+    </div>
+
+    <div class="form-group">
+
+      <label>Quantidade</label>
+
+      <input
+        class="recipe-quantity"
+        type="number"
+        min="0"
+        step="0.0001"
+        value="${existing ? existing.quantity : ""}"
+        oninput="calculateRecipeModal()">
+
+    </div>
+
+    <div class="form-group">
+
+      <label>Unidade</label>
+
+      <select class="recipe-unit"
+        onchange="calculateRecipeModal()">
+      </select>
+
+    </div>
+
+    <div class="form-group">
+
+      <label>Custo</label>
+
+      <input
+        class="recipe-line-cost"
+        readonly
+        value="R$ 0,00">
+
+    </div>
+
+    <button
+      class="btn btn-danger btn-small"
+      onclick="this.parentElement.remove();calculateRecipeModal()">
+      ✕
+    </button>
+  `;
+
+  container.appendChild(line);
+
+  const select =
+    line.querySelector(".recipe-ingredient");
+
+  updateRecipeLine(select);
+}
+
+function updateRecipeLine(select){
+
+  const line = select.closest(".recipe-line");
+
+  const ingredient =
+    data.ingredients.find(
+      i => i.id === select.value
+    );
+
+  const unitSelect =
+    line.querySelector(".recipe-unit");
+
+  if(!ingredient){
+
+    unitSelect.innerHTML =
+      `<option value="">-</option>`;
+
+    return;
+  }
+
+  if(ingredient.type === "kg"){
+
+    unitSelect.innerHTML = `
+      <option value="g">g</option>
+      <option value="kg">kg</option>
+    `;
+
+    unitSelect.value =
+      ingredient.recipeUnit === "kg"
+        ? "kg"
+        : "g";
+
+  }else{
+
+    unitSelect.innerHTML =
+      `<option value="un">un</option>`;
+
+    unitSelect.value = "un";
+  }
+
+  calculateRecipeModal();
+}
+
+function addRecipeCost(existing = null){
+
+  const container =
+    document.getElementById("recipeCosts");
+
+  const line = document.createElement("div");
+
+  line.className = "cost-line";
+
+  line.innerHTML = `
+
+    <div class="form-group">
+
+      <label>Descrição</label>
+
+      <input
+        class="recipe-cost-name"
+        placeholder="Ex.: Embalagem"
+        value="${existing ? escapeHtml(existing.name) : ""}"
+        oninput="calculateRecipeModal()">
+
+    </div>
+
+    <div class="form-group">
+
+      <label>Tipo</label>
+
+      <select
+        class="recipe-cost-type"
+        onchange="calculateRecipeModal()">
+
+        <option
+          value="fixed"
+          ${existing?.type === "fixed" ? "selected" : ""}>
+          Valor fixo
+        </option>
+
+        <option
+          value="percent"
+          ${existing?.type === "percent" ? "selected" : ""}>
+          Percentual
+        </option>
+
+      </select>
+
+    </div>
+
+    <div class="form-group">
+
+      <label>Valor</label>
+
+      <input
+        class="recipe-cost-value"
+        type="number"
+        min="0"
+        step="0.01"
+        value="${existing ? existing.value : ""}"
+        oninput="calculateRecipeModal()">
+
+    </div>
+
+    <button
+      class="btn btn-danger btn-small"
+      onclick="this.parentElement.remove();calculateRecipeModal()">
+      ✕
+    </button>
+  `;
+
+  container.appendChild(line);
+
+  calculateRecipeModal();
+}
+
+function calculateRecipeModal(){
+
+  const lines =
+    document.querySelectorAll(
+      "#recipeLines .recipe-line"
+    );
+
+  let ingredientTotal = 0;
+
+  lines.forEach(line => {
+
+    const ingredientId =
+      line.querySelector(".recipe-ingredient")?.value;
+
+    const quantity =
+      number(line.querySelector(".recipe-quantity")?.value);
+
+    const unit =
+      line.querySelector(".recipe-unit")?.value;
+
+    const ingredient =
+      data.ingredients.find(
+        i => i.id === ingredientId
+      );
+
+    let cost = 0;
+
+    if(ingredient && quantity > 0){
+
+      if(ingredient.type === "kg"){
+
+        if(unit === "kg"){
+          cost = quantity * ingredient.price;
+        }else{
+          cost = (quantity / 1000) * ingredient.price;
+        }
+
+      }else{
+
+        cost = quantity * ingredient.price;
+      }
+    }
+
+    ingredientTotal += cost;
+
+    const costInput =
+      line.querySelector(".recipe-line-cost");
+
+    if(costInput){
+      costInput.value = money(cost);
+    }
+  });
+
+  let indirectTotal = 0;
+
+  document
+    .querySelectorAll("#recipeCosts .cost-line")
+    .forEach(line => {
+
+      const type =
+        line.querySelector(".recipe-cost-type")?.value;
+
+      const value =
+        number(
+          line.querySelector(".recipe-cost-value")?.value
+        );
+
+      if(type === "percent"){
+
+        indirectTotal +=
+          ingredientTotal * (value / 100);
+
+      }else{
+
+        indirectTotal += value;
+      }
+    });
+
+  const total =
+    ingredientTotal + indirectTotal;
+
+  const yieldQty =
+    number(document.getElementById("recipeYield").value);
+
+  const unitCost =
+    yieldQty > 0
+      ? total / yieldQty
+      : 0;
+
+  const markup =
+    number(data.settings.defaultMarkup);
+
+  const suggested =
+    unitCost * (1 + markup / 100);
+
+  document.getElementById("recipeIngredientTotal")
+    .textContent = money(ingredientTotal);
+
+  document.getElementById("recipeIndirectTotal")
+    .textContent = money(indirectTotal);
+
+  document.getElementById("recipeTotal")
+    .textContent = money(total);
+
+  document.getElementById("recipeYieldPreview")
+    .textContent = yieldQty;
+
+  document.getElementById("recipeUnitCost")
+    .textContent = money(unitCost);
+
+  document.getElementById("recipeSuggestedPrice")
+    .textContent = money(suggested);
+}
+
+document.getElementById("recipeYield")
+  .addEventListener("input",calculateRecipeModal);
+
+function collectRecipeForm(){
+
+  const name =
+    document.getElementById("recipeName").value.trim();
+
+  const yieldQty =
+    number(document.getElementById("recipeYield").value);
+
+  if(!name){
+    showToast("Informe o nome da receita.","error");
+    return null;
+  }
+
+  if(yieldQty <= 0){
+    showToast("A produção deve ser maior que zero.","error");
+    return null;
+  }
+
+  const ingredients = [];
+
+  document
+    .querySelectorAll("#recipeLines .recipe-line")
+    .forEach(line => {
+
+      const ingredientId =
+        line.querySelector(".recipe-ingredient").value;
+
+      const quantity =
+        number(line.querySelector(".recipe-quantity").value);
+
+      const unit =
+        line.querySelector(".recipe-unit").value;
+
+      if(ingredientId && quantity > 0){
+
+        ingredients.push({
+          ingredientId,
+          quantity,
+          unit
+        });
+      }
+    });
+
+  if(!ingredients.length){
+
+    showToast(
+      "Adicione pelo menos um ingrediente à receita.",
+      "error"
+    );
+
+    return null;
+  }
+
+  const indirectCosts = [];
+
+  document
+    .querySelectorAll("#recipeCosts .cost-line")
+    .forEach(line => {
+
+      const name =
+        line.querySelector(".recipe-cost-name").value.trim();
+
+      const type =
+        line.querySelector(".recipe-cost-type").value;
+
+      const value =
+        number(
+          line.querySelector(".recipe-cost-value").value
+        );
+
+      if(name && value >= 0){
+
+        indirectCosts.push({
+          id:uid("cost"),
+          name,
+          type,
+          value
+        });
+      }
+    });
+
+  return {
+    name,
+    yield:yieldQty,
+    ingredients,
+    indirectCosts
+  };
+}
+
+function saveRecipe(){
+
+  const form = collectRecipeForm();
+
+  if(!form) return;
+
+  const id =
+    document.getElementById("recipeId").value;
+
+  if(id){
+
+    const recipe =
+      data.recipes.find(r => r.id === id);
+
+    if(recipe){
+
+      Object.assign(recipe,form);
+
+      recipe.updatedAt =
+        new Date().toISOString();
+    }
+
+    showToast("Receita atualizada!","success");
+
+  }else{
+
+    data.recipes.push({
+
+      id:uid("recipe"),
+
+      ...form,
+
+      createdAt:new Date().toISOString(),
+
+      updatedAt:new Date().toISOString()
+    });
+
+    showToast("Receita cadastrada!","success");
+  }
+
+  saveData();
+
+  closeModal("recipeModal");
+
+  refreshAll();
+}
+
+function getRecipeCost(recipe){
+
+  if(!recipe) return null;
+
+  let ingredientTotal = 0;
+
+  recipe.ingredients.forEach(item => {
+
+    const ingredient =
+      data.ingredients.find(
+        i => i.id === item.ingredientId
+      );
+
+    if(!ingredient) return;
+
+    ingredientTotal +=
+      calculateIngredientCost(
+        ingredient,
+        item.unit === "kg" && ingredient.type === "kg"
+          ? item.quantity
+          : item.quantity
+      );
+
+    /*
+      calculateIngredientCost assume que a unidade cadastrada
+      corresponde à unidade informada. Para manter receitas
+      antigas e novas consistentes, fazemos a conversão abaixo.
+    */
+
+    if(
+      ingredient.type === "kg" &&
+      ingredient.recipeUnit !== item.unit
+    ){
+
+      // Recalcular corretamente se a unidade da receita mudou.
+      if(item.unit === "kg"){
+        ingredientTotal -=
+          calculateIngredientCost(
+            ingredient,
+            item.quantity
+          );
+
+        ingredientTotal +=
+          item.quantity * ingredient.price;
+
+      }else if(item.unit === "g"){
+
+        ingredientTotal -=
+          calculateIngredientCost(
+            ingredient,
+            item.quantity
+          );
+
+        ingredientTotal +=
+          (item.quantity / 1000) *
+          ingredient.price;
+      }
+    }
+
+  });
+
+  let indirectTotal = 0;
+
+  (recipe.indirectCosts || []).forEach(cost => {
+
+    if(cost.type === "percent"){
+
+      indirectTotal +=
+        ingredientTotal * (cost.value / 100);
+
+    }else{
+
+      indirectTotal += number(cost.value);
+    }
+  });
+
+  const total =
+    ingredientTotal + indirectTotal;
+
+  const yieldQty =
+    number(recipe.yield);
+
+  const unitCost =
+    yieldQty > 0
+      ? total / yieldQty
+      : 0;
+
+  return {
+    ingredientTotal,
+    indirectTotal,
+    total,
+    yield:yieldQty,
+    unitCost
+  };
+}
+
+/*
+  Versão mais segura do cálculo da receita.
+  A unidade usada na receita é sempre respeitada.
+*/
+function getRecipeCostSafe(recipe){
+
+  if(!recipe) return null;
+
+  let ingredientTotal = 0;
+
+  recipe.ingredients.forEach(item => {
+
+    const ingredient =
+      data.ingredients.find(
+        i => i.id === item.ingredientId
+      );
+
+    if(!ingredient) return;
+
+    let cost = 0;
+
+    if(ingredient.type === "kg"){
+
+      if(item.unit === "kg"){
+        cost =
+          number(item.quantity) *
+          number(ingredient.price);
+      }else{
+        cost =
+          (number(item.quantity) / 1000) *
+          number(ingredient.price);
+      }
+
+    }else{
+
+      cost =
+        number(item.quantity) *
+        number(ingredient.price);
+    }
+
+    ingredientTotal += cost;
+  });
+
+  let indirectTotal = 0;
+
+  (recipe.indirectCosts || []).forEach(cost => {
+
+    const value = number(cost.value);
+
+    if(cost.type === "percent"){
+      indirectTotal +=
+        ingredientTotal * (value / 100);
+    }else{
+      indirectTotal += value;
+    }
+  });
+
+  const total =
+    ingredientTotal + indirectTotal;
+
+  const yieldQty =
+    number(recipe.yield);
+
+  return {
+    ingredientTotal,
+    indirectTotal,
+    total,
+    yield:yieldQty,
+    unitCost:
+      yieldQty > 0
+        ? total / yieldQty
+        : 0
+  };
+}
+
+function deleteRecipe(id){
+
+  const recipe =
+    data.recipes.find(r => r.id === id);
+
+  if(!recipe) return;
+
+  if(!confirm(`Excluir a receita "${recipe.name}"?`))
+    return;
+
+  data.recipes =
+    data.recipes.filter(r => r.id !== id);
+
+  saveData();
+
+  renderRecipes();
+
+  showToast("Receita excluída.","success");
+}
+
+function duplicateRecipe(id){
+
+  const original =
+    data.recipes.find(r => r.id === id);
+
+  if(!original) return;
+
+  const copy =
+    JSON.parse(JSON.stringify(original));
+
+  copy.id = uid("recipe");
+
+  copy.name =
+    original.name + " — Cópia";
+
+  copy.createdAt =
+    new Date().toISOString();
+
+  copy.updatedAt =
+    new Date().toISOString();
+
+  copy.indirectCosts =
+    (copy.indirectCosts || []).map(cost => ({
+      ...cost,
+      id:uid("cost")
+    }));
+
+  data.recipes.push(copy);
+
+  saveData();
+
+  refreshAll();
+
+  showToast("Receita duplicada.","success");
+}
+
+function renderRecipes(){
+
+  const tbody =
+    document.getElementById("recipesTable");
+
+  let list = [...data.recipes];
+
+  const search =
+    document.getElementById("recipeSearch")?.value
+      .toLowerCase()
+      .trim() || "";
+
+  const sort =
+    document.getElementById("recipeSort")?.value || "name";
+
+  if(search){
+
+    list = list.filter(recipe =>
+      recipe.name.toLowerCase().includes(search)
+    );
+  }
+
+  if(sort === "name"){
+
+    list.sort((a,b) =>
+      a.name.localeCompare(b.name,"pt-BR")
+    );
+  }
+
+  if(sort === "cost"){
+
+    list.sort((a,b) =>
+      getRecipeCostSafe(b).unitCost -
+      getRecipeCostSafe(a).unitCost
+    );
+  }
+
+  if(sort === "costAsc"){
+
+    list.sort((a,b) =>
+      getRecipeCostSafe(a).unitCost -
+      getRecipeCostSafe(b).unitCost
+    );
+  }
+
+  if(!list.length){
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7">
+          <div class="empty">
+            <div class="empty-icon">🥟</div>
+            <p>Nenhuma receita cadastrada.</p>
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+  tbody.innerHTML = list.map(recipe => {
+
+    const cost =
+      getRecipeCostSafe(recipe);
+
+    const sale =
+      cost.unitCost *
+      (1 + number(data.settings.defaultMarkup)/100);
+
+    return `
+      <tr>
+
+        <td>
+          <strong>${escapeHtml(recipe.name)}</strong>
+        </td>
+
+        <td>
+          ${recipe.yield} un.
+        </td>
+
+        <td>
+          ${recipe.ingredients.length}
+        </td>
+
+        <td>
+          <strong>${money(cost.total)}</strong>
+        </td>
+
+        <td>
+          ${money(cost.unitCost)}
+        </td>
+
+        <td>
+          <strong style="color:var(--primary)">
+            ${money(sale)}
+          </strong>
+        </td>
+
+        <td>
+
+          <div class="actions">
+
+            <button
+              class="btn btn-blue btn-small"
+              onclick="openRecipeModal('${recipe.id}')">
+              Editar
+            </button>
+
+            <button
+              class="btn btn-secondary btn-small"
+              onclick="duplicateRecipe('${recipe.id}')">
+              Duplicar
+            </button>
+
+            <button
+              class="btn btn-danger btn-small"
+              onclick="deleteRecipe('${recipe.id}')">
+              Excluir
+            </button>
+
+          </div>
+
+        </td>
+
+      </tr>
+    `;
+
+  }).join("");
+}
+
+/* ============================================================
+   FORMAÇÃO DE PREÇO
+   ============================================================ */
+
+function addPriceCost(existing = null){
+
+  priceCosts.push({
+    id:uid("pcost"),
+    name:existing?.name || "",
+    type:existing?.type || "fixed",
+    value:existing?.value ?? 0
+  });
+
+  renderPriceCosts();
+
+  calculatePricePage();
+}
+
+function renderPriceCosts(){
+
+  const container =
+    document.getElementById("priceCosts");
+
+  if(!priceCosts.length){
+
+    container.innerHTML = `
+      <div class="empty" style="padding:20px">
+        <p>Nenhum custo adicional.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML =
+    priceCosts.map(cost => `
+
+      <div class="cost-line" data-id="${cost.id}">
+
+        <div class="form-group">
+
+          <label>Descrição</label>
+
+          <input
+            value="${escapeHtml(cost.name)}"
+            placeholder="Ex.: Taxa do delivery"
+            oninput="updatePriceCost('${cost.id}','name',this.value)">
+
+        </div>
+
+        <div class="form-group">
+
+          <label>Tipo</label>
+
+          <select
+            onchange="updatePriceCost('${cost.id}','type',this.value)">
+
+            <option
+              value="fixed"
+              ${cost.type === "fixed" ? "selected" : ""}>
+              Valor fixo
+            </option>
+
+            <option
+              value="percent"
+              ${cost.type === "percent" ? "selected" : ""}>
+              Percentual
+            </option>
+
+          </select>
+
+        </div>
+
+        <div class="form-group">
+
+          <label>Valor</label>
+
+          <input
+            type="number"
+            min="0"
+            step="0.01"
+            value="${cost.value}"
+            oninput="updatePriceCost('${cost.id}','value',this.value)">
+
+        </div>
+
+        <button
+          class="btn btn-danger btn-small"
+          onclick="removePriceCost('${cost.id}')">
+          ✕
+        </button>
+
+      </div>
+
+    `).join("");
+}
+
+function updatePriceCost(id,field,value){
+
+  const cost =
+    priceCosts.find(c => c.id === id);
+
+  if(!cost) return;
+
+  if(field === "value"){
+    cost.value = number(value);
+  }else{
+    cost[field] = value;
+  }
+
+  calculatePricePage();
+}
+
+function removePriceCost(id){
+
+  priceCosts =
+    priceCosts.filter(c => c.id !== id);
+
+  renderPriceCosts();
+
+  calculatePricePage();
+}
+
+function populateRecipeSelects(){
+
+  const selects = [
+    "dashboardRecipe",
+    "priceRecipe",
+    "reportRecipe"
+  ];
+
+  selects.forEach(selectId => {
+
+    const select =
+      document.getElementById(selectId);
+
+    if(!select) return;
+
+    const oldValue = select.value;
+
+    const placeholder =
+      selectId === "dashboardRecipe"
+        ? "Nenhuma receita"
+        : "Selecione uma receita";
+
+    select.innerHTML =
+      `<option value="">${placeholder}</option>` +
+      data.recipes.map(recipe =>
+        `<option value="${recipe.id}">
+          ${escapeHtml(recipe.name)}
+        </option>`
+      ).join("");
+
+    if(data.recipes.some(r => r.id === oldValue)){
+      select.value = oldValue;
+    }
+
+  });
+}
+
+function calculatePricePage(){
+
+  const recipeId =
+    document.getElementById("priceRecipe").value;
+
+  const recipe =
+    data.recipes.find(r => r.id === recipeId);
+
+  const method =
+    document.getElementById("priceMethod").value;
+
+  const percentage =
+    Math.max(
+      0,
+      number(
+        document.getElementById("pricePercentage").value
+      )
+    );
+
+  const label =
+    document.getElementById("percentageLabel");
+
+  label.textContent =
+    method === "markup"
+      ? "Acréscimo desejado (%)"
+      : "Margem desejada (%)";
+
+  if(!recipe){
+
+    document.getElementById("priceResult")
+      .textContent = "R$ 0,00";
+
+    document.getElementById("priceCost")
+      .textContent = "R$ 0,00";
+
+    document.getElementById("priceProfit")
+      .textContent = "R$ 0,00";
+
+    document.getElementById("priceMargin")
+      .textContent = "0%";
+
+    document.getElementById("priceExplanation")
+      .textContent =
+      "Selecione uma receita para calcular.";
+
+    return;
+  }
+
+  const base =
+    getRecipeCostSafe(recipe);
+
+  let extraFixed = 0;
+  let extraPercent = 0;
+
+  priceCosts.forEach(cost => {
+
+    if(cost.type === "percent"){
+
+      extraPercent +=
+        base.unitCost *
+        (number(cost.value) / 100);
+
+    }else{
+
+      extraFixed +=
+        number(cost.value);
+    }
+
+  });
+
+  const finalCost =
+    base.unitCost +
+    extraFixed +
+    extraPercent;
+
+  let salePrice = 0;
+
+  if(method === "markup"){
+
+    salePrice =
+      finalCost *
+      (1 + percentage / 100);
+
+  }else{
+
+    if(percentage >= 100){
+
+      salePrice = Infinity;
+
+    }else{
+
+      salePrice =
+        finalCost /
+        (1 - percentage / 100);
+    }
+  }
+
+  const profit =
+    Number.isFinite(salePrice)
+      ? salePrice - finalCost
+      : Infinity;
+
+  const realMargin =
+    Number.isFinite(salePrice) &&
+    salePrice > 0
+      ? (profit / salePrice) * 100
+      : 0;
+
+  document.getElementById("priceResult")
+    .textContent =
+      Number.isFinite(salePrice)
+        ? money(salePrice)
+        : "Indisponível";
+
+  document.getElementById("priceCost")
+    .textContent = money(finalCost);
+
+  document.getElementById("priceProfit")
+    .textContent =
+      Number.isFinite(profit)
+        ? money(profit)
+        : "Indisponível";
+
+  document.getElementById("priceMargin")
+    .textContent = percent(realMargin);
+
+  document.getElementById("priceExplanation")
+    .textContent =
+      method === "markup"
+        ? `Custo de ${money(finalCost)} + ${percent(percentage)} de acréscimo.`
+        : `O preço foi calculado para que ${percent(percentage)} do preço final seja margem de lucro.`;
+
+  document.getElementById("priceDetails").innerHTML = `
+
+    <div class="grid-2">
+
+      <div>
+        <small style="color:#777">Ingredientes / unidade</small>
+        <h3>${money(base.ingredientTotal / base.yield)}</h3>
+      </div>
+
+      <div>
+        <small style="color:#777">Custos indiretos / unidade</small>
+        <h3>${money(base.indirectTotal / base.yield)}</h3>
+      </div>
+
+      <div>
+        <small style="color:#777">Custos adicionais desta tela</small>
+        <h3>${money(extraFixed + extraPercent)}</h3>
+      </div>
+
+      <div>
+        <small style="color:#777">Custo final / unidade</small>
+        <h3>${money(finalCost)}</h3>
+      </div>
+
+    </div>
+  `;
+}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+
+function updateDashboard(){
+
+  const recipeId =
+    document.getElementById("dashboardRecipe").value;
+
+  const recipe =
+    data.recipes.find(r => r.id === recipeId);
+
+  document.getElementById("dashIngredients")
+    .textContent = data.ingredients.length;
+
+  document.getElementById("dashRecipes")
+    .textContent = data.recipes.length;
+
+  if(data.recipes.length){
+
+    const costs =
+      data.recipes.map(r =>
+        getRecipeCostSafe(r).unitCost
+      );
+
+    const average =
+      costs.reduce((a,b) => a+b,0) /
+      costs.length;
+
+    document.getElementById("dashAverage")
+      .textContent = money(average);
+
+  }else{
+
+    document.getElementById("dashAverage")
+      .textContent = "R$ 0,00";
+  }
+
+  if(!recipe){
+
+    document.getElementById("dashboardRecipeInfo").innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">🥟</div>
+        <p>Selecione uma receita para visualizar os dados.</p>
+      </div>
+    `;
+
+    document.getElementById("dashCostUnit")
+      .textContent = "R$ 0,00";
+
+    document.getElementById("dashSalePrice")
+      .textContent = "R$ 0,00";
+
+    document.getElementById("dashProfitUnit")
+      .textContent = "R$ 0,00";
+
+    document.getElementById("dashMargin")
+      .textContent = "0%";
+
+    document.getElementById("dashProfit")
+      .textContent = "R$ 0,00";
+
+    return;
+  }
+
+  const cost =
+    getRecipeCostSafe(recipe);
+
+  const markup =
+    number(data.settings.defaultMarkup);
+
+  const sale =
+    cost.unitCost *
+    (1 + markup / 100);
+
+  const profit =
+    sale - cost.unitCost;
+
+  const margin =
+    sale > 0
+      ? (profit / sale) * 100
+      : 0;
+
+  const totalProfit =
+    profit * cost.yield;
+
+  document.getElementById("dashCostUnit")
+    .textContent = money(cost.unitCost);
+
+  document.getElementById("dashSalePrice")
+    .textContent = money(sale);
+
+  document.getElementById("dashProfitUnit")
+    .textContent = money(profit);
+
+  document.getElementById("dashMargin")
+    .textContent = percent(margin);
+
+  document.getElementById("dashProfit")
+    .textContent = money(totalProfit);
+
+  document.getElementById("dashboardRecipeInfo").innerHTML = `
+
+    <div class="success-box">
+
+      <strong>${escapeHtml(recipe.name)}</strong>
+
+      <div style="margin-top:12px" class="grid-2">
+
+        <div>
+          <small>Produção</small>
+          <h3>${recipe.yield} pastéis</h3>
+        </div>
+
+        <div>
+          <small>Custo total</small>
+          <h3>${money(cost.total)}</h3>
+        </div>
+
+        <div>
+          <small>Preço sugerido</small>
+          <h3>${money(sale)}</h3>
+        </div>
+
+        <div>
+          <small>Lucro da produção</small>
+          <h3>${money(totalProfit)}</h3>
+        </div>
+
+      </div>
+
+    </div>
+  `;
+}
+
+/* ============================================================
+   RELATÓRIO
+   ============================================================ */
+
+function renderReport(){
+
+  const recipeId =
+    document.getElementById("reportRecipe").value;
+
+  const container =
+    document.getElementById("reportContent");
+
+  const recipe =
+    data.recipes.find(r => r.id === recipeId);
+
+  if(!recipe){
+
+    container.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">📄</div>
+        <p>Selecione uma receita.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+  const cost =
+    getRecipeCostSafe(recipe);
+
+  const markup =
+    number(data.settings.defaultMarkup);
+
+  const sale =
+    cost.unitCost *
+    (1 + markup / 100);
+
+  const profit =
+    sale - cost.unitCost;
+
+  const margin =
+    sale > 0
+      ? profit / sale * 100
+      : 0;
+
+  const totalProfit =
+    profit * recipe.yield;
+
+  container.innerHTML = `
+
+    <div style="text-align:center;margin-bottom:25px">
+
+      <h1>Relatório de Custos</h1>
+
+      <p style="color:#777">
+        PastelPro — Gerenciamento de custos e preços
+      </p>
+
+      <h2 style="margin-top:10px">
+        ${escapeHtml(recipe.name)}
+      </h2>
+
+    </div>
+
+    <div class="grid-3">
+
+      <div class="card">
+        <small>Custo dos ingredientes</small>
+        <h2>${money(cost.ingredientTotal)}</h2>
+      </div>
+
+      <div class="card">
+        <small>Custos indiretos</small>
+        <h2>${money(cost.indirectTotal)}</h2>
+      </div>
+
+      <div class="card">
+        <small>Custo total</small>
+        <h2>${money(cost.total)}</h2>
+      </div>
+
+    </div>
+
+    <div class="card" style="margin-top:20px">
+
+      <div class="section-title">
+        <div>
+          <h2>Ingredientes</h2>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Ingrediente</th>
+              <th>Quantidade</th>
+              <th>Unidade</th>
+              <th>Custo</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            ${recipe.ingredients.map(item => {
+
+              const ingredient =
+                data.ingredients.find(
+                  i => i.id === item.ingredientId
+                );
+
+              let itemCost = 0;
+
+              if(ingredient){
+
+                if(ingredient.type === "kg"){
+
+                  itemCost =
+                    item.unit === "kg"
+                      ? item.quantity * ingredient.price
+                      : (item.quantity / 1000) * ingredient.price;
+
+                }else{
+
+                  itemCost =
+                    item.quantity * ingredient.price;
+                }
+              }
+
+              return `
+                <tr>
+
+                  <td>
+                    ${escapeHtml(
+                      ingredient?.name || "Ingrediente removido"
+                    )}
+                  </td>
+
+                  <td>${item.quantity}</td>
+
+                  <td>${item.unit}</td>
+
+                  <td><strong>${money(itemCost)}</strong></td>
+
+                </tr>
+              `;
+
+            }).join("")}
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+    <div class="card" style="margin-top:20px">
+
+      <h2>Resumo financeiro</h2>
+
+      <div class="grid-3" style="margin-top:20px">
+
+        <div>
+          <small>Quantidade produzida</small>
+          <h2>${recipe.yield}</h2>
+        </div>
+
+        <div>
+          <small>Custo por unidade</small>
+          <h2>${money(cost.unitCost)}</h2>
+        </div>
+
+        <div>
+          <small>Preço de venda</small>
+          <h2 style="color:var(--primary)">
+            ${money(sale)}
+          </h2>
+        </div>
+
+        <div>
+          <small>Lucro por unidade</small>
+          <h2 style="color:var(--success)">
+            ${money(profit)}
+          </h2>
+        </div>
+
+        <div>
+          <small>Margem</small>
+          <h2>${percent(margin)}</h2>
+        </div>
+
+        <div>
+          <small>Lucro total</small>
+          <h2 style="color:var(--success)">
+            ${money(totalProfit)}
+          </h2>
+        </div>
+
+      </div>
+
+    </div>
+
+    <p style="margin-top:25px;color:#777;font-size:12px">
+      Relatório gerado em
+      ${new Date().toLocaleString("pt-BR")}
+    </p>
+  `;
+}
+
+/* ============================================================
+   BACKUP
+   ============================================================ */
+
+function exportData(){
+
+  const json =
+    JSON.stringify(data,null,2);
+
+  const blob =
+    new Blob(
+      [json],
+      {type:"application/json"}
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const a =
+    document.createElement("a");
+
+  const date =
+    new Date()
+      .toISOString()
+      .slice(0,10);
+
+  a.href = url;
+
+  a.download =
+    `pastelpro-backup-${date}.json`;
+
+  a.click();
+
+  URL.revokeObjectURL(url);
+
+  showToast(
+    "Backup exportado com sucesso!",
+    "success"
+  );
+}
+
+function importData(event){
+
+  const file =
+    event.target.files[0];
+
+  if(!file) return;
+
+  const reader =
+    new FileReader();
+
+  reader.onload = function(e){
+
+    try{
+
+      const imported =
+        JSON.parse(e.target.result);
+
+      if(
+        !imported ||
+        !Array.isArray(imported.ingredients) ||
+        !Array.isArray(imported.recipes)
+      ){
+
+        throw new Error("Formato inválido");
+      }
+
+      if(
+        !confirm(
+          "Importar este backup substituirá os dados atuais. Continuar?"
+        )
+      ){
+
+        event.target.value = "";
+        return;
+      }
+
+      data = {
+
+        ingredients:
+          imported.ingredients,
+
+        recipes:
+          imported.recipes,
+
+        settings:
+          imported.settings || {
+            defaultMarkup:100
+          },
+
+        lastSaved:
+          new Date().toISOString()
+      };
+
+      saveData();
+
+      refreshAll();
+
+      showToast(
+        "Backup restaurado com sucesso!",
+        "success"
+      );
+
+    }catch(error){
+
+      console.error(error);
+
+      showToast(
+        "Arquivo de backup inválido.",
+        "error"
+      );
+    }
+
+    event.target.value = "";
+  };
+
+  reader.readAsText(file);
+}
+
+function clearAllData(){
+
+  if(!confirm(
+    "ATENÇÃO!\n\nIsso apagará todos os ingredientes e receitas deste navegador.\n\nDeseja realmente continuar?"
+  )){
+    return;
+  }
+
+  if(!confirm(
+    "Última confirmação: apagar TODOS os dados?"
+  )){
+    return;
+  }
+
+  localStorage.removeItem(STORAGE_KEY);
+
+  data = {
+    ingredients:[],
+    recipes:[],
+    settings:{
+      defaultMarkup:100
+    },
+    lastSaved:null
+  };
+
+  priceCosts = [];
+
+  refreshAll();
+
+  showToast(
+    "Todos os dados foram apagados.",
+    "success"
+  );
+}
+
+function updateBackupStatus(){
+
+  document.getElementById("backupIngredients")
+    .textContent =
+      data.ingredients.length;
+
+  document.getElementById("backupRecipes")
+    .textContent =
+      data.recipes.length;
+
+  document.getElementById("lastSaved")
+    .textContent =
+      data.lastSaved
+        ? new Date(data.lastSaved).toLocaleString("pt-BR")
+        : "Ainda não salvo";
+}
+
+/* ============================================================
+   MODAL
+   ============================================================ */
+
+function closeModal(id){
+
+  document
+    .getElementById(id)
+    .classList.remove("show");
+}
+
+document.querySelectorAll(".modal").forEach(modal => {
+
+  modal.addEventListener("click",event => {
+
+    if(event.target === modal){
+      modal.classList.remove("show");
+    }
+
+  });
+
+});
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+
+function showToast(message,type="info"){
+
+  const container =
+    document.getElementById("toastContainer");
+
+  const toast =
+    document.createElement("div");
+
+  toast.className =
+    `toast ${type}`;
+
+  toast.textContent = message;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(120%)";
+
+    setTimeout(() => toast.remove(),300);
+
+  },3000);
+}
+
+/* ============================================================
+   ATUALIZAÇÃO GERAL
+   ============================================================ */
+
+function refreshAll(){
+
+  renderIngredients();
+
+  renderRecipes();
+
+  populateRecipeSelects();
+
+  updateDashboard();
+
+  calculatePricePage();
+
+  renderReport();
+
+  updateBackupStatus();
+
+  calculateRecipeModal();
+}
+
+/* ============================================================
+   DATA / INICIALIZAÇÃO
+   ============================================================ */
+
+function initialize(){
+
+  loadData();
+
+  document.getElementById("currentDate")
+    .textContent =
+      new Date().toLocaleDateString(
+        "pt-BR",
+        {
+          weekday:"short",
+          day:"2-digit",
+          month:"2-digit",
+          year:"numeric"
+        }
+      );
+
+  refreshAll();
+}
+
+initialize();
+
+/* ============================================================
+   AUTO-SALVAMENTO DE CONFIGURAÇÕES
+   ============================================================ */
+
+/*
+  O sistema salva automaticamente depois de cada alteração
+  importante. O localStorage também é atualizado após:
+  - cadastrar ingrediente
+  - editar ingrediente
+  - excluir ingrediente
+  - cadastrar receita
+  - editar receita
+  - excluir receita
+  - duplicar receita
+  - importar backup
+  - apagar dados
+*/
+
+/* ============================================================
+   PROTEÇÃO CONTRA FECHAMENTO
+   ============================================================ */
+
+window.addEventListener("beforeunload",() => {
+
+  try{
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(data)
+    );
+  }catch(error){
+    console.error(error);
+  }
+
+});
+</script>
+
+</body>
+</html>
+

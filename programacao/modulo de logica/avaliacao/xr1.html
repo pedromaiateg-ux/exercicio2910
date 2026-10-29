@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gestão da Pastelaria</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f8;color:#20252b}
+button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:8px;padding:10px 14px;background:#e85d04;color:white;font-weight:700}
+button.secondary{background:#374151}button.danger{background:#dc2626}.container{display:flex;min-height:100vh}
+.sidebar{width:240px;background:#171717;color:#fff;padding:20px;position:fixed;height:100vh;left:0;top:0}
+.logo{font-size:22px;font-weight:800;margin-bottom:25px}.nav button{display:block;width:100%;text-align:left;background:transparent;margin:5px 0;color:#ddd}
+.nav button:hover,.nav button.active{background:#e85d04;color:#fff}
+.main{margin-left:240px;width:calc(100% - 240px);padding:25px}.section{display:none}.section.active{display:block}
+h1{margin-top:0}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:20px}
+.card{background:white;border-radius:14px;padding:18px;box-shadow:0 2px 10px #0000000d}.card small{color:#777}.value{font-size:25px;font-weight:800;margin-top:8px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}.box{background:white;padding:20px;border-radius:14px;margin-bottom:20px}
+form{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.full{grid-column:1/-1}
+label{font-size:13px;font-weight:700}input,select{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:5px;background:#fff}
+table{width:100%;border-collapse:collapse}th,td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:14px}th{background:#fafafa}
+.actions{display:flex;gap:6px;flex-wrap:wrap}.actions button{padding:6px 9px;font-size:12px}
+.recipe-row{display:grid;grid-template-columns:2fr 1fr auto;gap:8px;margin-bottom:8px;align-items:end}
+.alert{padding:12px;border-radius:8px;background:#fff3cd;margin-bottom:10px}.success{background:#dcfce7}.dangerText{color:#dc2626;font-weight:700}
+canvas{max-height:300px}
+@media(max-width:800px){
+.sidebar{width:100%;height:auto;position:relative;padding:10px}.container{display:block}.main{margin:0;width:100%;padding:15px}.nav{display:flex;overflow:auto;gap:5px}.nav button{white-space:nowrap;width:auto}.cards{grid-template-columns:repeat(2,1fr)}.grid,form{grid-template-columns:1fr}.full{grid-column:auto}.tableWrap{overflow-x:auto}.recipe-row{grid-template-columns:1fr 1fr auto}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<aside class="sidebar">
+<div class="logo">🥟 Minha Pastelaria</div>
+<div class="nav">
+<button onclick="showSection('dashboard')">📊 Dashboard</button>
+<button onclick="showSection('ingredientes')">🥩 Ingredientes</button>
+<button onclick="showSection('pasteis')">🥟 Meus Pastéis</button>
+<button onclick="showSection('vendas')">💰 Vendas</button>
+<button onclick="showSection('estoque')">📦 Estoque</button>
+<button onclick="showSection('compras')">🛒 Compras</button>
+<button onclick="showSection('despesas')">💸 Despesas</button>
+<button onclick="showSection('simulador')">🧮 Simulador</button>
+<button onclick="showSection('relatorios')">📈 Relatórios</button>
+<button onclick="showSection('investimentos')">🚀 Investimentos</button>
+<button onclick="showSection('historico')">📋 Histórico</button>
+<button onclick="showSection('backup')">💾 Backup</button>
+</div>
+</aside>
+
+<main class="main">
+
+<section id="dashboard" class="section active">
+<h1>Dashboard</h1>
+<div class="cards">
+<div class="card"><small>Faturamento hoje</small><div class="value" id="dashFat">R$ 0,00</div></div>
+<div class="card"><small>Custos hoje</small><div class="value" id="dashCost">R$ 0,00</div></div>
+<div class="card"><small>Despesas hoje</small><div class="value" id="dashExp">R$ 0,00</div></div>
+<div class="card"><small>Lucro hoje</small><div class="value" id="dashProfit">R$ 0,00</div></div>
+</div>
+<div class="cards">
+<div class="card"><small>Pastéis vendidos</small><div class="value" id="dashQty">0</div></div>
+<div class="card"><small>Valor do estoque</small><div class="value" id="dashStock">R$ 0,00</div></div>
+<div class="card"><small>Pastel mais vendido</small><div class="value" id="bestProduct">-</div></div>
+<div class="card"><small>Produto mais lucrativo</small><div class="value" id="bestProfit">-</div></div>
+</div>
+<div class="grid">
+<div class="box"><h3>Faturamento por dia</h3><canvas id="salesChart"></canvas></div>
+<div class="box"><h3>Vendas por sabor</h3><canvas id="productChart"></canvas></div>
+</div>
+</section>
+
+<section id="ingredientes" class="section">
+<h1>Ingredientes e Produtos</h1>
+<div class="box">
+<form id="ingredientForm">
+<input type="hidden" id="ingId">
+<div><label>Nome</label><input id="ingName" required></div>
+<div><label>Categoria</label><input id="ingCat"></div>
+<div><label>Quantidade comprada</label><input id="ingQty" type="number" step="0.001" required></div>
+<div><label>Unidade</label><select id="ingUnit"><option>kg</option><option>g</option><option>litro</option><option>ml</option><option>unidade</option></select></div>
+<div><label>Preço total</label><input id="ingPrice" type="number" step="0.01" required></div>
+<div><label>Estoque mínimo</label><input id="ingMin" type="number" step="0.001" value="0"></div>
+<div class="full"><button>Salvar ingrediente</button></div>
+</form>
+</div>
+<div class="box"><div class="tableWrap"><table><thead><tr><th>Produto</th><th>Estoque</th><th>Preço/unidade base</th><th>Valor estoque</th><th>Ações</th></tr></thead><tbody id="ingredientsTable"></tbody></table></div></div>
+</section>
+
+<section id="pasteis" class="section">
+<h1>Meus Pastéis</h1>
+<div class="box">
+<form id="pastelForm">
+<input type="hidden" id="pastelId">
+<div><label>Nome do pastel</label><input id="pastelName" required></div>
+<div><label>Preço de venda</label><input id="pastelPrice" type="number" step="0.01" required></div>
+<div class="full"><h3>Ingredientes da receita</h3><div id="recipeRows"></div><button type="button" onclick="addRecipeRow()">+ Adicionar ingrediente</button></div>
+<div class="full" id="recipeTotal">Custo: R$ 0,00</div>
+<div class="full"><button>Salvar pastel</button></div>
+</form>
+</div>
+<div class="box"><div class="tableWrap"><table><thead><tr><th>Pastel</th><th>Custo</th><th>Venda</th><th>Lucro</th><th>Margem</th><th>Ações</th></tr></thead><tbody id="pasteisTable"></tbody></table></div></div>
+</section>
+
+<section id="vendas" class="section">
+<h1>Fechamento do Dia</h1>
+<div class="box">
+<form id="saleForm">
+<div><label>Data</label><input id="saleDate" type="date" required></div>
+<div><label>Pastel</label><select id="saleProduct" required></select></div>
+<div><label>Quantidade</label><input id="saleQty" type="number" min="1" required></div>
+<div><label>Forma de pagamento</label><select id="salePayment"><option>Pix</option><option>Dinheiro</option><option>Cartão</option><option>Aplicativo</option></select></div>
+<div class="full"><button>Registrar venda</button></div>
+</form>
+</div>
+<div class="cards">
+<div class="card"><small>Faturamento selecionado</small><div class="value" id="todayRevenue">R$ 0,00</div></div>
+<div class="card"><small>Custo</small><div class="value" id="todayCost">R$ 0,00</div></div>
+<div class="card"><small>Lucro bruto</small><div class="value" id="todayProfit">R$ 0,00</div></div>
+<div class="card"><small>Quantidade</small><div class="value" id="todayQty">0</div></div>
+</div>
+<div class="box"><div class="tableWrap"><table><thead><tr><th>Data</th><th>Produto</th><th>Qtd.</th><th>Faturamento</th><th>Pagamento</th><th>Ação</th></tr></thead><tbody id="salesTable"></tbody></table></div></div>
+</section>
+
+<section id="estoque" class="section">
+<h1>Estoque</h1>
+<div class="box" id="stockAlerts"></div>
+<div class="box"><div class="tableWrap"><table><thead><tr><th>Produto</th><th>Quantidade</th><th>Unidade</th><th>Valor</th><th>Status</th></tr></thead><tbody id="stockTable"></tbody></table></div></div>
+</section>
+
+<section id="compras" class="section">
+<h1>Compras</h1>
+<div class="box">
+<p>Para registrar uma compra, use o cadastro de Ingredientes. Cada novo cadastro de produto representa uma compra e entra no estoque.</p>
+<button onclick="showSection('ingredientes')">Cadastrar compra</button>
+</div>
+<div class="box"><h3>Total em compras</h3><div class="value" id="totalPurchases">R$ 0,00</div></div>
+</section>
+
+<section id="despesas" class="section">
+<h1>Despesas</h1>
+<div class="box">
+<form id="expenseForm">
+<div><label>Descrição</label><input id="expName" required></div>
+<div><label>Categoria</label><select id="expCat"><option>Fixa</option><option>Variável</option></select></div>
+<div><label>Valor</label><input id="expValue" type="number" step="0.01" required></div>
+<div><label>Data</label><input id="expDate" type="date" required></div>
+<div class="full"><button>Adicionar despesa</button></div>
+</form>
+</div>
+<div class="box"><div class="tableWrap"><table><thead><tr><th>Data</th><th>Descrição</th><th>Categoria</th><th>Valor</th><th>Ação</th></tr></thead><tbody id="expensesTable"></tbody></table></div></div>
+</section>
+
+<section id="simulador" class="section">
+<h1>Simulador de Preço</h1>
+<div class="box">
+<form id="simForm">
+<div><label>Custo do produto</label><input id="simCost" type="number" step="0.01"></div>
+<div><label>Margem desejada (%)</label><input id="simMargin" type="number" value="50"></div>
+<div><label>Markup</label><input id="simMarkup" type="number" value="2" step="0.01"></div>
+<div class="full"><button type="button" onclick="simulate()">Calcular</button></div>
+</form>
+</div>
+<div class="cards">
+<div class="card"><small>Preço pela margem</small><div class="value" id="simPrice">R$ 0,00</div></div>
+<div class="card"><small>Preço pelo markup</small><div class="value" id="simMarkupPrice">R$ 0,00</div></div>
+<div class="card"><small>Lucro estimado</small><div class="value" id="simProfit">R$ 0,00</div></div>
+</div>
+</section>
+
+<section id="relatorios" class="section">
+<h1>Relatórios</h1>
+<div class="box">
+<label>Período</label>
+<select id="reportPeriod" onchange="renderReports()"><option value="today">Hoje</option><option value="7">Últimos 7 dias</option><option value="month">Este mês</option><option value="all">Tudo</option></select>
+</div>
+<div class="cards">
+<div class="card"><small>Faturamento</small><div class="value" id="reportRevenue">R$ 0,00</div></div>
+<div class="card"><small>Custos</small><div class="value" id="reportCost">R$ 0,00</div></div>
+<div class="card"><small>Despesas</small><div class="value" id="reportExpense">R$ 0,00</div></div>
+<div class="card"><small>Lucro</small><div class="value" id="reportProfit">R$ 0,00</div></div>
+</div>
+</section>
+
+<section id="investimentos" class="section">
+<h1>Como investir na pastelaria</h1>
+<div class="box">
+<h3>Resumo</h3>
+<div id="investmentAdvice"></div>
+</div>
+<div class="box">
+<h3>Distribuição sugerida do lucro</h3>
+<div id="investmentBreakdown"></div>
+</div>
+</section>
+
+<section id="historico" class="section">
+<h1>Histórico</h1>
+<div class="box">
+<p>Consulte todas as vendas, compras e despesas registradas no sistema.</p>
+<button onclick="showSection('vendas')">Ver vendas</button>
+<button onclick="showSection('despesas')">Ver despesas</button>
+<button onclick="showSection('ingredientes')">Ver compras</button>
+</div>
+</section>
+
+<section id="backup" class="section">
+<h1>Backup dos dados</h1>
+<div class="box">
+<button onclick="exportData()">Exportar JSON</button>
+<input type="file" id="importFile" accept=".json" onchange="importData(event)" style="margin-top:15px">
+<hr>
+<button class="danger" onclick="clearData()">Apagar todos os dados</button>
+</div>
+</section>
+
+</main>
+</div>
+
+<script>
+const KEY="pastelariaGestaoV1";
+let db=JSON.parse(localStorage.getItem(KEY)||'{"ingredients":[],"pastels":[],"sales":[],"expenses":[]}');
+
+const $=id=>document.getElementById(id);
+const money=v=>(Number(v)||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const today=()=>new Date().toISOString().slice(0,10);
+
+function save(){localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
+
+function showSection(id){
+ document.querySelectorAll(".section").forEach(x=>x.classList.remove("active"));
+ $(id).classList.add("active");
+ renderAll();
+ window.scrollTo(0,0);
+}
+
+function baseInfo(ing){
+ let q=Number(ing.qty), p=Number(ing.price);
+ if(ing.unit==="kg") return {base:q*1000, price:p/(q*1000), label:"g"};
+ if(ing.unit==="g") return {base:q, price:p/q, label:"g"};
+ if(ing.unit==="litro") return {base:q*1000, price:p/(q*1000), label:"ml"};
+ if(ing.unit==="ml") return {base:q, price:p/q, label:"ml"};
+ return {base:q, price:p/q, label:"un"};
+}
+
+function costIngredient(ing,amount,unit){
+ let info=baseInfo(ing);
+ let a=Number(amount);
+ if(info.label==="g" && unit==="kg") a*=1000;
+ if(info.label==="ml" && unit==="litro") a*=1000;
+ return a*info.price;
+}
+
+$("ingredientForm").onsubmit=e=>{
+ e.preventDefault();
+ const id=$("ingId").value||crypto.randomUUID();
+ const obj={
+  id,name:$("ingName").value,cat:$("ingCat").value,
+  qty:Number($("ingQty").value),unit:$("ingUnit").value,
+  price:Number($("ingPrice").value),min:Number($("ingMin").value)||0,
+  date:today()
+ };
+ const old=db.ingredients.findIndex(x=>x.id===id);
+ if(old>=0) db.ingredients[old]=obj; else db.ingredients.push(obj);
+ e.target.reset();$("ingId").value="";
+ save();
+};
+
+function editIngredient(id){
+ const x=db.ingredients.find(i=>i.id===id);if(!x)return;
+ $("ingId").value=x.id;$("ingName").value=x.name;$("ingCat").value=x.cat;
+ $("ingQty").value=x.qty;$("ingUnit").value=x.unit;$("ingPrice").value=x.price;$("ingMin").value=x.min;
+ showSection("ingredientes");
+}
+
+function deleteIngredient(id){
+ if(confirm("Excluir este ingrediente?")){db.ingredients=db.ingredients.filter(x=>x.id!==id);save()}
+}
+
+function renderIngredients(){
+ $("ingredientsTable").innerHTML=db.ingredients.map(x=>{
+  const i=baseInfo(x);
+  return `<tr><td>${x.name}</td><td>${x.qty} ${x.unit}</td><td>${money(i.price)}/${i.label}</td><td>${money(x.price)}</td>
+  <td class="actions"><button onclick="editIngredient('${x.id}')">Editar</button><button class="danger" onclick="deleteIngredient('${x.id}')">Excluir</button></td></tr>`;
+ }).join("");
+ $("totalPurchases").textContent=money(db.ingredients.reduce((s,x)=>s+x.price,0));
+}
+
+function addRecipeRow(data={ingredientId:"",amount:1,unit:"g"}){
+ const div=document.createElement("div");div.className="recipe-row";
+ div.innerHTML=`<select class="rIng">${db.ingredients.map(i=>`<option value="${i.id}" ${i.id===data.ingredientId?"selected":""}>${i.name}</option>`).join("")}</select>
+ <input class="rAmount" type="number" step="0.001" value="${data.amount}">
+ <select class="rUnit"><option ${data.unit==="g"?"selected":""}>g</option><option ${data.unit==="kg"?"selected":""}>kg</option><option ${data.unit==="ml"?"selected":""}>ml</option><option ${data.unit==="litro"?"selected":""}>litro</option><option ${data.unit==="unidade"?"selected":""}>unidade</option></select>
+ <button type="button" class="danger" onclick="this.parentElement.remove();calcRecipe()">X</button>`;
+ $("recipeRows").appendChild(div);
+ div.querySelectorAll("input,select").forEach(x=>x.addEventListener("input",calcRecipe));
+ calcRecipe();
+}
+
+function calcRecipe(){
+ let total=0;
+ document.querySelectorAll(".recipe-row").forEach(r=>{
+  const ing=db.ingredients.find(i=>i.id===r.querySelector(".rIng").value);
+  if(ing)total+=costIngredient(ing,r.querySelector(".rAmount").value,r.querySelector(".rUnit").value);
+ });
+ $("recipeTotal").innerHTML=`Custo total: <strong>${money(total)}</strong>`;
+ return total;
+}
+
+$("pastelForm").onsubmit=e=>{
+ e.preventDefault();
+ const recipe=[...document.querySelectorAll(".recipe-row")].map(r=>({
+  ingredientId:r.querySelector(".rIng").value,
+  amount:Number(r.querySelector(".rAmount").value),
+  unit:r.querySelector(".rUnit").value
+ }));
+ const id=$("pastelId").value||crypto.randomUUID();
+ const obj={id,name:$("pastelName").value,price:Number($("pastelPrice").value),recipe};
+ const index=db.pastels.findIndex(x=>x.id===id);
+ if(index>=0)db.pastels[index]=obj;else db.pastels.push(obj);
+ e.target.reset();$("recipeRows").innerHTML="";$("pastelId").value="";
+ save();
+};
+
+function pastelCost(p){
+ return p.recipe.reduce((s,r)=>{
+  const i=db.ingredients.find(x=>x.id===r.ingredientId);
+  return s+(i?costIngredient(i,r.amount,r.unit):0);
+ },0);
+}
+
+function editPastel(id){
+ const p=db.pastels.find(x=>x.id===id);if(!p)return;
+ $("pastelId").value=p.id;$("pastelName").value=p.name;$("pastelPrice").value=p.price;
+ $("recipeRows").innerHTML="";p.recipe.forEach(addRecipeRow);showSection("pasteis");
+}
+
+function deletePastel(id){
+ if(confirm("Excluir este pastel?")){db.pastels=db.pastels.filter(x=>x.id!==id);save()}
+}
+
+function renderPastels(){
+ $("pasteisTable").innerHTML=db.pastels.map(p=>{
+  const c=pastelCost(p),profit=p.price-c,margin=p.price?profit/p.price*100:0;
+  return `<tr><td>${p.name}</td><td>${money(c)}</td><td>${money(p.price)}</td><td>${money(profit)}</td><td>${margin.toFixed(1)}%</td>
+  <td class="actions"><button onclick="editPastel('${p.id}')">Editar</button><button class="danger" onclick="deletePastel('${p.id}')">Excluir</button></td></tr>`;
+ }).join("");
+ $("saleProduct").innerHTML=db.pastels.map(p=>`<option value="${p.id}">${p.name}</option>`).join("");
+}
+
+$("saleDate").value=today();
+$("saleForm").onsubmit=e=>{
+ e.preventDefault();
+ const p=db.pastels.find(x=>x.id===$("saleProduct").value);if(!p)return;
+ const qty=Number($("saleQty").value);
+ db.sales.push({id:crypto.randomUUID(),date:$("saleDate").value,pastelId:p.id,qty,payment:$("salePayment").value});
+ e.target.reset();$("saleDate").value=today();save();
+};
+
+function deleteSale(id){if(confirm("Excluir esta venda?")){db.sales=db.sales.filter(x=>x.id!==id);save()}}
+
+function salesFor(date=null){
+ return db.sales.filter(s=>!date||s.date===date);
+}
+
+function renderSales(){
+ const selected=$("saleDate").value||today(), sales=salesFor(selected);
+ let rev=0,cost=0,qty=0;
+ $("salesTable").innerHTML=db.sales.slice().reverse().map(s=>{
+  const p=db.pastels.find(x=>x.id===s.pastelId);if(!p)return "";
+  const r=p.price*s.qty;
+  return `<tr><td>${s.date}</td><td>${p.name}</td><td>${s.qty}</td><td>${money(r)}</td><td>${s.payment}</td><td><button class="danger" onclick="deleteSale('${s.id}')">Excluir</button></td></tr>`;
+ }).join("");
+ sales.forEach(s=>{const p=db.pastels.find(x=>x.id===s.pastelId);if(p){rev+=p.price*s.qty;cost+=pastelCost(p)*s.qty;qty+=s.qty}});
+ $("todayRevenue").textContent=money(rev);$("todayCost").textContent=money(cost);$("todayProfit").textContent=money(rev-cost);$("todayQty").textContent=qty;
+}
+
+$("saleDate").addEventListener("change",renderSales);
+
+function renderStock(){
+ let html="",alerts="";
+ db.ingredients.forEach(i=>{
+  const info=baseInfo(i);
+  let sold=0;
+  db.sales.forEach(s=>{
+   const p=db.pastels.find(x=>x.id===s.pastelId);
+   p?.recipe.forEach(r=>{if(r.ingredientId===i.id){let a=r.amount;if(info.label==="g"&&r.unit==="kg")a*=1000;if(info.label==="ml"&&r.unit==="litro")a*=1000;sold+=a*s.qty;}});
+  });
+  let stock=info.base-sold;
+  const low=stock<=i.min;
+  html+=`<tr><td>${i.name}</td><td>${stock.toFixed(3)}</td><td>${info.label}</td><td>${money(stock*info.price)}</td><td>${low?'<span class="dangerText">ESTOQUE BAIXO</span>':'OK'}</td></tr>`;
+  if(low)alerts+=`<div class="alert">⚠️ ${i.name}: estoque baixo.</div>`;
+ });
+ $("stockTable").innerHTML=html;
+ $("stockAlerts").innerHTML=alerts||'<div class="alert success">✓ Nenhum produto abaixo do estoque mínimo.</div>';
+}
+
+$("expenseForm").onsubmit=e=>{
+ e.preventDefault();
+ db.expenses.push({id:crypto.randomUUID(),name:$("expName").value,cat:$("expCat").value,value:Number($("expValue").value),date:$("expDate").value});
+ e.target.reset();$("expDate").value=today();save();
+};
+
+function deleteExpense(id){if(confirm("Excluir despesa?")){db.expenses=db.expenses.filter(x=>x.id!==id);save()}}
+
+function renderExpenses(){
+ $("expensesTable").innerHTML=db.expenses.slice().reverse().map(x=>`<tr><td>${x.date}</td><td>${x.name}</td><td>${x.cat}</td><td>${money(x.value)}</td><td><button class="danger" onclick="deleteExpense('${x.id}')">Excluir</button></td></tr>`).join("");
+}
+
+function simulate(){
+ const c=Number($("simCost").value)||0,m=Number($("simMargin").value)||0,mark=Number($("simMarkup").value)||0;
+ const p=m<100?c/(1-m/100):0;
+ $("simPrice").textContent=money(p);$("simMarkupPrice").textContent=money(c*mark);$("simProfit").textContent=money(p-c);
+}
+
+function renderDashboard(){
+ const s=salesFor(today());
+ let rev=0,cost=0,qty=0;
+ const counts={};
+ s.forEach(x=>{const p=db.pastels.find(y=>y.id===x.pastelId);if(p){rev+=p.price*x.qty;cost+=pastelCost(p)*x.qty;qty+=x.qty;counts[p.name]=(counts[p.name]||0)+x.qty}});
+ const exp=db.expenses.filter(x=>x.date===today()).reduce((a,x)=>a+x.value,0);
+ const stock=db.ingredients.reduce((a,i)=>{const b=baseInfo(i);return a+b.base*b.price},0);
+ $("dashFat").textContent=money(rev);$("dashCost").textContent=money(cost);$("dashExp").textContent=money(exp);$("dashProfit").textContent=money(rev-cost-exp);
+ $("dashQty").textContent=qty;$("dashStock").textContent=money(stock);
+ const best=Object.entries(counts).sort((a,b)=>b[1]-a[1])[0];$("bestProduct").textContent=best?best[0]:"-";
+ let bp=db.pastels.slice().sort((a,b)=>(b.price-pastelCost(b))-(a.price-pastelCost(a)))[0];
+ $("bestProfit").textContent=bp?bp.name:"-";
+ drawCharts(counts);
+}
+
+let chart1,chart2;
+function drawCharts(counts){
+ const dates=[...new Set(db.sales.map(x=>x.date))].sort().slice(-7);
+ const values=dates.map(d=>salesFor(d).reduce((s,x)=>{const p=db.pastels.find(y=>y.id===x.pastelId);return s+(p?p.price*x.qty:0)},0));
+ if(chart1)chart1.destroy();if(chart2)chart2.destroy();
+ chart1=new Chart($("salesChart"),{type:"line",data:{labels:dates,datasets:[{label:"Faturamento",data:values}]},options:{responsive:true}});
+ chart2=new Chart($("productChart"),{type:"bar",data:{labels:Object.keys(counts),datasets:[{label:"Unidades",data:Object.values(counts)}]},options:{responsive:true}});
+}
+
+function renderReports(){
+ const mode=$("reportPeriod").value,now=new Date();
+ let filtered=db.sales;
+ if(mode==="today")filtered=salesFor(today());
+ if(mode==="7"){const d=new Date();d.setDate(d.getDate()-6);filtered=db.sales.filter(x=>new Date(x.date)>=d)}
+ if(mode==="month")filtered=db.sales.filter(x=>x.date.slice(0,7)===today().slice(0,7));
+ let rev=0,cost=0;
+ filtered.forEach(s=>{const p=db.pastels.find(x=>x.id===s.pastelId);if(p){rev+=p.price*s.qty;cost+=pastelCost(p)*s.qty}});
+ const dates=new Set(filtered.map(x=>x.date));
+ const exp=db.expenses.filter(x=>dates.has(x.date)).reduce((a,x)=>a+x.value,0);
+ $("reportRevenue").textContent=money(rev);$("reportCost").textContent=money(cost);$("reportExpense").textContent=money(exp);$("reportProfit").textContent=money(rev-cost-exp);
+}
+
+function renderInvestments(){
+ const month=today().slice(0,7);
+ const rev=db.sales.filter(x=>x.date.startsWith(month)).reduce((s,x)=>{const p=db.pastels.find(y=>y.id===x.pastelId);return s+(p?p.price*x.qty:0)},0);
+ const cost=db.sales.filter(x=>x.date.startsWith(month)).reduce((s,x)=>{const p=db.pastels.find(y=>y.id===x.pastelId);return s+(p?pastelCost(p)*x.qty:0)},0);
+ const exp=db.expenses.filter(x=>x.date.startsWith(month)).reduce((s,x)=>s+x.value,0);
+ const profit=Math.max(0,rev-cost-exp);
+ $("investmentAdvice").innerHTML=`<p>Lucro estimado deste mês: <strong>${money(profit)}</strong></p><p>Use os dados para priorizar estoque dos produtos mais vendidos e melhorar a margem dos produtos menos lucrativos.</p>`;
+ $("investmentBreakdown").innerHTML=`<p>Estoque: <strong>${money(profit*.40)}</strong></p><p>Capital de giro: <strong>${money(profit*.30)}</strong></p><p>Marketing: <strong>${money(profit*.15)}</strong></p><p>Equipamentos: <strong>${money(profit*.10)}</strong></p><p>Reserva: <strong>${money(profit*.05)}</strong></p>`;
+}
+
+function exportData(){
+ const blob=new Blob([JSON.stringify(db,null,2)],{type:"application/json"});
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="backup-pastelaria.json";a.click();
+ URL.revokeObjectURL(a.href);
+}
+
+function importData(e){
+ const file=e.target.files[0];if(!file)return;
+ const reader=new FileReader();
+ reader.onload=()=>{try{const data=JSON.parse(reader.result);if(data.ingredients&&data.pastels&&data.sales&&data.expenses){db=data;save();alert("Backup importado com sucesso!")}else alert("Arquivo inválido.")}catch{alert("Não foi possível importar o arquivo.")}};
+ reader.readAsText(file);
+}
+
+function clearData(){
+ if(confirm("ATENÇÃO: isso apagará todos os dados. Continuar?")){
+  db={ingredients:[],pastels:[],sales:[],expenses:[]};save();
+ }
+}
+
+function renderAll(){
+ renderIngredients();renderPastels();renderSales();renderStock();renderExpenses();renderDashboard();renderReports();renderInvestments();
+}
+
+$("expDate").value=today();
+renderAll();
+</script>
+</body>
+</html>

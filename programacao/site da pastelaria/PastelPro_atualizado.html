@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PastelPro</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#0b0b0d;color:#f5f5f5;min-height:100vh}
+button,input,select{font:inherit}
+button{cursor:pointer;border:0}
+.hidden{display:none!important}
+.app{min-height:100vh}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:250px;background:#111114;border-right:1px solid #242429;padding:20px 14px;overflow:auto;z-index:20}
+.logo{font-size:21px;font-weight:800;padding:8px 10px 22px;color:#fff}
+.logo span{color:#e50914}
+.menu-title{font-size:10px;color:#777;margin:18px 10px 7px;font-weight:700}
+.nav button{display:block;width:100%;text-align:left;background:transparent;color:#aaa;padding:11px 12px;border-radius:9px;margin:3px 0}
+.nav button:hover,.nav button.active{background:#3a1115;color:#fff}
+.nav button.active{border-left:3px solid #e50914}
+.main{margin-left:250px;min-height:100vh}
+.topbar{height:70px;background:#101013;border-bottom:1px solid #242429;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:10}
+.search{background:#18181c;border:1px solid #29292f;color:#ddd;border-radius:9px;padding:10px 13px;width:310px;outline:none}
+.top-actions{display:flex;align-items:center;gap:10px}
+.btn{padding:10px 14px;border-radius:8px;font-weight:700}
+.btn-red{background:#e50914;color:#fff}
+.btn-dark{background:#1b1b20;color:#ddd;border:1px solid #303038}
+.user{display:flex;align-items:center;gap:9px;margin-left:10px}
+.avatar{width:34px;height:34px;border-radius:50%;background:#e50914;display:grid;place-items:center;font-weight:800}
+.content{padding:28px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.header h1{font-size:28px}
+.muted{color:#888;margin-top:6px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px}
+.card{background:#121216;border:1px solid #25252b;border-radius:13px;padding:19px}
+.card small{color:#888}
+.value{font-size:25px;font-weight:800;margin:9px 0}
+.up{color:#36c77a;font-size:13px}
+.grid2{display:grid;grid-template-columns:2fr 1fr;gap:15px;margin-top:15px}
+.section-title{font-weight:800;margin-bottom:16px}
+.chart{height:280px}
+canvas{width:100%;height:100%}
+.product,.movement,.alert{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid #222229}
+.badge{padding:5px 8px;border-radius:20px;background:#201f24;color:#aaa;font-size:11px}
+.badge.green{color:#44d483;background:#10271c}
+.badge.yellow{color:#f4c64d;background:#2b2410}
+.badge.red{color:#ff5b64;background:#2b1114}
+.page{display:none}.page.active{display:block}
+.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:13px;border-bottom:1px solid #242429;text-align:left;white-space:nowrap}.table th{color:#888;font-size:12px}
+.modal-bg{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:50;padding:20px}.modal-bg.show{display:flex}
+.modal{background:#151519;border:1px solid #303038;border-radius:14px;width:100%;max-width:520px;padding:24px}.modal h2{margin-bottom:18px}
+.form{display:grid;gap:12px}.form label{font-size:13px;color:#aaa}.form input,.form select{width:100%;background:#0e0e11;border:1px solid #303038;color:#fff;padding:11px;border-radius:8px;outline:none}
+.form input:focus{border-color:#e50914}.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:8px}
+.toast{position:fixed;right:20px;bottom:20px;background:#19191e;border:1px solid #333;padding:13px 16px;border-radius:9px;display:none;z-index:80}
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(circle at top,#241013,#09090b 45%)}
+.login-box{width:100%;max-width:430px;background:#111114;border:1px solid #29292f;border-radius:18px;padding:32px;box-shadow:0 20px 60px #000}
+.login-logo{text-align:center;font-size:28px;font-weight:900;margin-bottom:8px}.login-logo span{color:#e50914}
+.login-sub{text-align:center;color:#888;margin-bottom:25px}
+.check{display:flex;gap:8px;align-items:center;color:#aaa;font-size:13px}.check input{width:auto}
+.login-error{background:#351216;color:#ff747b;padding:10px;border-radius:8px;font-size:13px;display:none}
+.settings-box{max-width:700px}
+.info{background:#19191e;border:1px solid #29292f;border-radius:10px;padding:14px;color:#aaa;margin-bottom:15px}
+.danger{color:#ff626a}
+.mobile-nav{display:none}
+@media(max-width:1000px){.cards{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+@media(max-width:700px){
+.sidebar{display:none}.main{margin-left:0;padding-bottom:70px}.topbar{padding:0 14px}.search{display:none}.content{padding:18px}.header{align-items:flex-start;gap:10px}.header h1{font-size:22px}.cards{grid-template-columns:1fr 1fr}.top-actions .quick{display:none}.mobile-nav{position:fixed;display:flex;bottom:0;left:0;right:0;background:#111114;border-top:1px solid #29292f;z-index:30}.mobile-nav button{flex:1;background:transparent;color:#aaa;padding:11px 2px;font-size:11px}.mobile-nav button.active{color:#fff;background:#351014}.user .name{display:none}}
+</style>
+</head>
+<body>
+
+<div id="loginScreen" class="login-screen">
+  <div class="login-box">
+    <div class="login-logo">🥟 <span id="loginBrand">PASTELPRO</span></div>
+    <div class="login-sub">Acesse o gerenciamento do seu negócio</div>
+    <div class="form">
+      <div><label>E-mail</label><input id="loginEmail" type="email" placeholder="seu@email.com"></div>
+      <div><label>Senha</label><input id="loginPassword" type="password" placeholder="Sua senha"></div>
+      <div class="check"><input id="remember" type="checkbox"> <span>Lembrar meu e-mail</span></div>
+      <div class="check"><input id="savePassword" type="checkbox"> <span>Salvar senha neste dispositivo</span></div>
+      <div id="loginError" class="login-error"></div>
+      <button class="btn btn-red" onclick="login()">ENTRAR</button>
+      <button class="btn btn-dark" onclick="openRegister()">CRIAR CONTA</button>
+    </div>
+  </div>
+</div>
+
+<div id="app" class="app hidden">
+  <aside class="sidebar">
+    <div class="logo">🥟 <span id="brandName">PASTELPRO</span></div>
+    <div class="nav">
+      <div class="menu-title">PRINCIPAL</div>
+      <button class="active" data-page="dashboard">Dashboard</button>
+      <div class="menu-title">OPERAÇÃO</div>
+      <button data-page="vendas">Nova Venda</button><button data-page="producao">Produção</button>
+      <button data-page="compras">Compras</button><button data-page="perdas">Perdas</button>
+      <button data-page="marketing">Marketing</button><button data-page="caixa">Fechamento de Caixa</button>
+      <div class="menu-title">PRODUTOS</div>
+      <button data-page="produtos">Produtos</button><button data-page="receitas">Receitas</button>
+      <button data-page="combos">Combos</button><button data-page="ingredientes">Ingredientes</button>
+      <div class="menu-title">ESTOQUE</div>
+      <button data-page="estoque">Estoque Atual</button><button data-page="lotes">Lotes</button>
+      <button data-page="movimentacoes">Movimentações</button><button data-page="inventario">Inventário</button>
+      <div class="menu-title">FINANCEIRO</div>
+      <button data-page="financeiro">Caixa</button><button data-page="despesas">Despesas</button>
+      <button data-page="pagar">Contas a Pagar</button><button data-page="receber">Contas a Receber</button><button data-page="dre">DRE</button>
+      <div class="menu-title">RELATÓRIOS</div>
+      <button data-page="relatorios">Vendas</button><button data-page="rel-fin">Financeiro</button><button data-page="rel-est">Estoque</button><button data-page="rel-prod">Produção</button><button data-page="rel-mark">Marketing</button>
+      <div class="menu-title">ADMINISTRAÇÃO</div>
+      <button data-page="config">Configurações</button>
+      <button onclick="logout()">Sair</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <input class="search" placeholder="Pesquisar produto, cliente, venda, ingrediente...">
+      <div class="top-actions">
+        <button class="btn btn-red quick" onclick="openModal('sale')">+ NOVA VENDA</button>
+        <button class="btn btn-dark quick" onclick="openModal('production')">+ PRODUÇÃO</button>
+        <span>🔔</span>
+        <div class="user"><div class="avatar" id="avatar">P</div><div class="name"><b id="userName">Pedro</b><br><small>Administrador</small></div></div>
+      </div>
+    </header>
+
+    <section class="content">
+      <div id="dashboard" class="page active">
+        <div class="header"><div><h1>Bom dia, Pedro! 👋</h1><p class="muted">Confira o resumo do seu negócio hoje.</p></div></div>
+        <div class="cards">
+          <div class="card"><small>Faturamento Hoje</small><div class="value" id="revenue">R$ 0,00</div><div class="up">↑ dados reais</div></div>
+          <div class="card"><small>Lucro Hoje</small><div class="value" id="profit">R$ 0,00</div><div class="up">calculado pelo sistema</div></div>
+          <div class="card"><small>Ticket Médio</small><div class="value" id="ticket">R$ 0,00</div><div class="up">vendas de hoje</div></div>
+          <div class="card"><small>Vendas Hoje</small><div class="value" id="salesCount">0</div><div class="up">vendas registradas</div></div>
+        </div>
+        <div class="grid2">
+          <div class="card"><div class="section-title">FATURAMENTO DOS ÚLTIMOS 7 DIAS</div><div class="chart"><canvas id="chart"></canvas></div></div>
+          <div class="card"><div class="section-title">STATUS DO ESTOQUE</div><div class="product"><span>Itens cadastrados</span><b id="stockItems">0</b></div><div class="product"><span>Estoque baixo</span><span class="badge yellow" id="lowStock">0</span></div><div class="product"><span>Sem estoque</span><span class="badge red" id="outStock">0</span></div><button class="btn btn-dark" style="margin-top:14px;width:100%" onclick="go('estoque')">VER ESTOQUE</button></div>
+        </div>
+        <div class="grid2">
+          <div class="card"><div class="section-title">PRODUTOS MAIS VENDIDOS HOJE</div><div id="topProducts"><p class="muted">Nenhuma venda hoje.</p></div></div>
+          <div class="card"><div class="section-title">ALERTAS</div><div class="alert"><span>🔔 Contas a pagar</span><span class="badge yellow">Ver</span></div><div class="alert"><span>📦 Estoque baixo</span><span class="badge yellow">Ver</span></div><div class="alert"><span>💰 Margem baixa</span><span class="badge red">Ver</span></div></div>
+        </div>
+      </div>
+
+      <div id="config" class="page">
+        <div class="header"><div><h1>Configurações</h1><p class="muted">Personalize o nome e os dados do seu sistema.</p></div></div>
+        <div class="card settings-box">
+          <div class="section-title">IDENTIDADE DO SISTEMA</div>
+          <div class="info">O administrador pode trocar o nome do sistema a qualquer momento. A alteração aparece no menu e na tela de login.</div>
+          <div class="form">
+            <div><label>Nome do site / sistema</label><input id="siteNameInput" placeholder="Ex.: PastelPro"></div>
+            <div><label>Nome do responsável</label><input id="ownerNameInput" placeholder="Seu nome"></div>
+            <div class="form-actions"><button class="btn btn-red" onclick="saveSettings()">SALVAR ALTERAÇÕES</button></div>
+          </div>
+        </div>
+        <br>
+        <div class="card settings-box">
+          <div class="section-title">CONTA</div>
+          <p class="muted">Você está conectado como administrador. O sistema está em modo local/protótipo.</p>
+          <br><button class="btn btn-dark" onclick="logout()">SAIR DA CONTA</button>
+        </div>
+      </div>
+
+      <div id="vendas" class="page"><div class="header"><div><h1>Nova Venda</h1><p class="muted">Registre vendas e acompanhe o faturamento.</p></div><button class="btn btn-red" onclick="openModal('sale')">+ NOVA VENDA</button></div></div>
+      <div id="producao" class="page"><div class="header"><div><h1>Produção</h1><p class="muted">Registre a produção e consumo dos ingredientes.</p></div><button class="btn btn-red" onclick="openModal('production')">+ PRODUÇÃO</button></div></div>
+      <div id="compras" class="page"><div class="header"><div><h1>Compras</h1><p class="muted">Cadastre compras e atualize seus lotes.</p></div></div></div>
+      <div id="perdas" class="page"><div class="header"><div><h1>Perdas</h1><p class="muted">Registre desperdícios sem transformar em venda.</p></div></div></div>
+      <div id="marketing" class="page"><div class="header"><div><h1>Marketing</h1><p class="muted">Registre produtos utilizados em divulgação.</p></div></div></div>
+      <div id="caixa" class="page"><div class="header"><div><h1>Fechamento de Caixa</h1><p class="muted">Confira e feche o caixa do período.</p></div></div></div>
+      <div id="produtos" class="page"><div class="header"><div><h1>Produtos</h1><p class="muted">Cadastre produtos, preços e custos.</p></div></div><div class="card table-wrap"><table class="table"><thead><tr><th>Produto</th><th>Preço</th><th>Custo</th><th>Margem</th></tr></thead><tbody><tr><td>Pastel de Frango</td><td>R$ 15,00</td><td>R$ 0,00</td><td>—</td><td>Pastel de Carne</td><td>R$ 15,00</td><td>R$ 0,00</td><td>—</td></tr></tbody></table></div></div>
+      <div id="receitas" class="page"><div class="header"><div><h1>Receitas</h1><p class="muted">Monte fichas técnicas com gramas, ml e unidades.</p></div></div></div>
+      <div id="combos" class="page"><div class="header"><div><h1>Combos</h1><p class="muted">Crie kits e ofertas.</p></div></div></div>
+      <div id="ingredientes" class="page"><div class="header"><div><h1>Ingredientes</h1><p class="muted">Cadastre matéria-prima, unidade e custo atual.</p></div></div></div>
+      <div id="estoque" class="page"><div class="header"><div><h1>Estoque Atual</h1><p class="muted">Acompanhe estoque teórico e real.</p></div></div><div class="card table-wrap"><table class="table"><thead><tr><th>Item</th><th>Quantidade</th><th>Unidade</th><th>Status</th></tr></thead><tbody><tr><td>Sem itens cadastrados ainda.</td><td>—</td><td>—</td><td>—</td></tr></tbody></table></div></div>
+      <div id="lotes" class="page"><div class="header"><div><h1>Lotes</h1><p class="muted">Controle lotes, validade e custo histórico.</p></div></div></div>
+      <div id="movimentacoes" class="page"><div class="header"><div><h1>Movimentações</h1><p class="muted">Histórico de entradas, saídas, perdas, marketing e vendas.</p></div></div></div>
+      <div id="inventario" class="page"><div class="header"><div><h1>Inventário</h1><p class="muted">Compare estoque contado com estoque teórico.</p></div></div></div>
+      <div id="financeiro" class="page"><div class="header"><div><h1>Caixa</h1><p class="muted">Acompanhe entradas, saídas e saldo.</p></div></div></div>
+      <div id="despesas" class="page"><div class="header"><div><h1>Despesas</h1><p class="muted">Cadastre despesas fixas e variáveis.</p></div></div></div>
+      <div id="pagar" class="page"><div class="header"><div><h1>Contas a Pagar</h1><p class="muted">Controle compromissos financeiros.</p></div></div></div>
+      <div id="receber" class="page"><div class="header"><div><h1>Contas a Receber</h1><p class="muted">Controle valores que ainda serão recebidos.</p></div></div></div>
+      <div id="dre" class="page"><div class="header"><div><h1>DRE</h1><p class="muted">Receita, custos variáveis, margem de contribuição, despesas e resultado.</p></div></div></div>
+      <div id="relatorios" class="page"><div class="header"><div><h1>Relatório de Vendas</h1><p class="muted">Analise vendas, produtos e períodos.</p></div></div></div>
+      <div id="rel-fin" class="page"><div class="header"><div><h1>Relatório Financeiro</h1><p class="muted">Analise faturamento, custos e resultado.</p></div></div></div>
+      <div id="rel-est" class="page"><div class="header"><div><h1>Relatório de Estoque</h1><p class="muted">Analise consumo, estoque e perdas.</p></div></div></div>
+      <div id="rel-prod" class="page"><div class="header"><div><h1>Relatório de Produção</h1><p class="muted">Analise produção e consumo.</p></div></div></div>
+      <div id="rel-mark" class="page"><div class="header"><div><h1>Relatório de Marketing</h1><p class="muted">Veja quanto foi investido em divulgação.</p></div></div></div>
+    </section>
+  </main>
+  <nav class="mobile-nav"><button class="active" onclick="go('dashboard')">⌂<br>Início</button><button onclick="go('vendas')">＋<br>Venda</button><button onclick="go('producao')">⚙<br>Produção</button><button onclick="go('estoque')">▣<br>Estoque</button><button onclick="go('config')">⚙<br>Config.</button></nav>
+</div>
+
+<div id="modalBg" class="modal-bg">
+  <div class="modal"><h2 id="modalTitle">Cadastro</h2><div id="modalBody"></div></div>
+</div>
+<div id="toast" class="toast"></div>
+
+<script>
+const ADMIN_EMAIL="pedromaiateg@gmail.com";
+const ADMIN_PASSWORD="363636";
+
+let state=JSON.parse(localStorage.getItem("pastelproState")||"null")||{
+  brand:"PastelPro", owner:"Pedro", users:[], sales:[], products:[], ingredients:[]
+};
+
+function saveState(){localStorage.setItem("pastelproState",JSON.stringify(state))}
+function $(id){return document.getElementById(id)}
+function toast(msg){$("toast").textContent=msg;$("toast").style.display="block";setTimeout(()=>$("toast").style.display="none",2500)}
+function applyBrand(){
+  $("brandName").textContent=state.brand.toUpperCase();
+  $("loginBrand").textContent=state.brand.toUpperCase();
+  $("siteNameInput").value=state.brand;
+  $("ownerNameInput").value=state.owner;
+  $("userName").textContent=state.owner;
+  $("avatar").textContent=(state.owner||"P")[0].toUpperCase();
+  document.title=state.brand;
+}
+function showApp(){ $("loginScreen").classList.add("hidden"); $("app").classList.remove("hidden"); applyBrand(); drawChart(); updateDashboard(); }
+function login(){
+  const email=$("loginEmail").value.trim().toLowerCase(), pass=$("loginPassword").value;
+  const err=$("loginError");
+  if(email===ADMIN_EMAIL && pass===ADMIN_PASSWORD){
+    localStorage.setItem("pp_logged","1");
+    if($("remember").checked)localStorage.setItem("pp_email",email); else localStorage.removeItem("pp_email");
+    if($("savePassword").checked)localStorage.setItem("pp_saved_password",pass); else localStorage.removeItem("pp_saved_password");
+    err.style.display="none";showApp();return;
+  }
+  const user=state.users.find(u=>u.email===email&&u.password===pass);
+  if(user){localStorage.setItem("pp_logged","1");showApp();return}
+  err.textContent="E-mail ou senha incorretos.";err.style.display="block";
+}
+function openRegister(){
+  $("modalTitle").textContent="Criar conta";
+  $("modalBody").innerHTML=`<div class="form">
+  <div><label>Nome do responsável</label><input id="regName" placeholder="Seu nome"></div>
+  <div><label>Nome da empresa</label><input id="regBusiness" placeholder="Nome do negócio"></div>
+  <div><label>E-mail</label><input id="regEmail" type="email" placeholder="seu@email.com"></div>
+  <div><label>Senha</label><input id="regPass" type="password" placeholder="Crie uma senha"></div>
+  <div><label>Confirmar senha</label><input id="regPass2" type="password" placeholder="Repita a senha"></div>
+  <div class="form-actions"><button class="btn btn-dark" onclick="closeModal()">CANCELAR</button><button class="btn btn-red" onclick="register()">CRIAR CONTA</button></div></div>`;
+  $("modalBg").classList.add("show");
+}
+function register(){
+  const name=$("regName").value.trim(),business=$("regBusiness").value.trim(),email=$("regEmail").value.trim().toLowerCase(),p=$("regPass").value,p2=$("regPass2").value;
+  if(!name||!business||!email||!p)return toast("Preencha todos os campos");
+  if(p!==p2)return toast("As senhas não conferem");
+  if(email===ADMIN_EMAIL||state.users.some(u=>u.email===email))return toast("Este e-mail já está cadastrado");
+  state.users.push({name,business,email,password:p});saveState();closeModal();toast("Conta criada com sucesso");$("loginEmail").value=email;
+}
+function logout(){localStorage.removeItem("pp_logged");$("app").classList.add("hidden");$("loginScreen").classList.remove("hidden")}
+function go(page){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  $(page).classList.add("active");
+  document.querySelectorAll(".nav button[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+  document.querySelectorAll(".mobile-nav button").forEach(b=>b.classList.remove("active"));
+}
+function saveSettings(){
+  const n=$("siteNameInput").value.trim(),o=$("ownerNameInput").value.trim();
+  if(!n)return toast("Informe um nome");
+  state.brand=n;state.owner=o||"Administrador";saveState();applyBrand();toast("Nome do sistema alterado!");
+}
+function openModal(type){
+  const configs={
+    sale:["Nova Venda",`<div class="form"><div><label>Produto</label><input id="mName" placeholder="Ex.: Pastel de Frango"></div><div><label>Quantidade</label><input id="mQty" type="number" value="1" min="1"></div><div><label>Valor total</label><input id="mValue" type="number" step="0.01" placeholder="0,00"></div><div class="form-actions"><button class="btn btn-dark" onclick="closeModal()">CANCELAR</button><button class="btn btn-red" onclick="saveSale()">REGISTRAR</button></div></div>`],
+    production:["Nova Produção",`<div class="form"><div><label>Produto/receita</label><input placeholder="Ex.: Pastel de Frango"></div><div><label>Quantidade produzida</label><input type="number" value="1"></div><div class="form-actions"><button class="btn btn-dark" onclick="closeModal()">CANCELAR</button><button class="btn btn-red" onclick="closeModal();toast('Produção registrada')">REGISTRAR</button></div></div>`],
+    purchase:["Nova Compra",`<div class="form"><div><label>Ingrediente</label><input placeholder="Ex.: Queijo"></div><div><label>Quantidade</label><input placeholder="Ex.: 1 kg"></div><div><label>Valor pago</label><input type="number" step="0.01"></div><div class="form-actions"><button class="btn btn-dark" onclick="closeModal()">CANCELAR</button><button class="btn btn-red" onclick="closeModal();toast('Compra registrada')">REGISTRAR</button></div></div>`],
+    loss:["Registrar Perda",`<div class="form"><div><label>Item</label><input placeholder="Ex.: Pastel de frango"></div><div><label>Quantidade</label><input type="number"></div><div><label>Motivo</label><input placeholder="Desperdício, validade..."></div><div class="form-actions"><button class="btn btn-dark" onclick="closeModal()">CANCELAR</button><button class="btn btn-red" onclick="closeModal();toast('Perda registrada')">REGISTRAR</button></div></div>`],
+    marketing:["Registrar Marketing",`<div class="form"><div><label>Produto utilizado</label><input placeholder="Ex.: Pastel de pizza"></div><div><label>Quantidade utilizada</label><input type="number"></div><div><label>Observação</label><input placeholder="Divulgação no Instagram..."></div><div class="form-actions"><button class="btn btn-dark" onclick="closeModal()">CANCELAR</button><button class="btn btn-red" onclick="closeModal();toast('Investimento de marketing registrado')">REGISTRAR</button></div></div>`],
+    product:["Novo Produto",`<div class="form"><div><label>Nome</label><input id="pName"></div><div><label>Preço de venda</label><input id="pPrice" type="number" step="0.01"></div><div class="form-actions"><button class="btn btn-dark" onclick="closeModal()">CANCELAR</button><button class="btn btn-red" onclick="saveProduct()">SALVAR</button></div></div>`],
+    ingredient:["Novo Ingrediente",`<div class="form"><div><label>Nome</label><input id="iName"></div><div><label>Quantidade comprada (kg)</label><input id="iQty" type="number" step="0.001" placeholder="Ex.: 0.500"></div><div><label>Preço pago</label><input id="iPrice" type="number" step="0.01"></div><div class="info">Exemplo: 500 g = 0,500 kg.</div><div class="form-actions"><button class="btn btn-dark" onclick="closeModal()">CANCELAR</button><button class="btn btn-red" onclick="saveIngredient()">SALVAR</button></div></div>`]
+  };
+  $("modalTitle").textContent=configs[type][0];$("modalBody").innerHTML=configs[type][1];$("modalBg").classList.add("show");
+}
+function closeModal(){$("modalBg").classList.remove("show")}
+function saveSale(){
+  const name=$("mName").value.trim(),qty=Number($("mQty").value),value=Number($("mValue").value);
+  if(!name||!qty||!value)return toast("Preencha os dados da venda");
+  state.sales.push({name,qty,value,date:new Date().toISOString()});saveState();closeModal();updateDashboard();toast("Venda registrada!");
+}
+function saveProduct(){
+  const name=$("pName").value.trim(),price=Number($("pPrice").value);
+  if(!name||!price)return toast("Preencha os dados");
+  state.products.push({name,price});saveState();closeModal();updateDashboard();toast("Produto salvo!");
+}
+function saveIngredient(){
+  const name=$("iName").value.trim(),qty=Number($("iQty").value),price=Number($("iPrice").value);
+  if(!name||!qty||!price)return toast("Preencha os dados");
+  state.ingredients.push({name,qty,price});saveState();closeModal();updateDashboard();toast("Ingrediente salvo!");
+}
+function updateDashboard(){
+  const today=new Date().toDateString();
+  const sales=state.sales.filter(s=>new Date(s.date).toDateString()===today);
+  const revenue=sales.reduce((a,b)=>a+b.value,0);
+  $("revenue").textContent=reais(revenue);$("salesCount").textContent=sales.length;
+  $("ticket").textContent=reais(sales.length?revenue/sales.length:0);
+  $("profit").textContent=reais(revenue); // custo real será ligado às receitas/estoque na versão completa
+  $("stockItems").textContent=state.ingredients.length+state.products.length;
+  const map={};sales.forEach(s=>map[s.name]=(map[s.name]||0)+s.qty);
+  const arr=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  $("topProducts").innerHTML=arr.length?arr.map((x,i)=>`<div class="product"><span>${i+1}. ${x[0]}</span><b>${x[1]} un.</b></div>`).join(""):`<p class="muted">Nenhuma venda hoje.</p>`;
+}
+function reais(v){return Number(v||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+function drawChart(){
+  const c=$("chart"),ctx=c.getContext("2d"),dpr=devicePixelRatio||1,w=c.clientWidth,h=c.clientHeight;
+  c.width=w*dpr;c.height=h*dpr;ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
+  ctx.strokeStyle="#29292f";ctx.lineWidth=1;
+  for(let i=1;i<5;i++){let y=h*i/5;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke()}
+  const vals=[0,0,0,0,0,0,0]; const today=new Date();
+  state.sales.forEach(s=>{let dd=new Date(s.date),diff=Math.round((today-dd)/86400000);if(diff>=0&&diff<7)vals[6-diff]+=s.value});
+  const max=Math.max(...vals,1),step=w/(vals.length-1);
+  ctx.strokeStyle="#e50914";ctx.lineWidth=3;ctx.beginPath();
+  vals.forEach((v,i)=>{let x=i*step,y=h-20-(v/max)*(h-40);i?ctx.lineTo(x,y):ctx.moveTo(x,y)});ctx.stroke();
+}
+function PageTitle({}){} // marcador para o HTML
+function SimpleTable(){}
+
+$("loginEmail").value=localStorage.getItem("pp_email")||"";
+if(localStorage.getItem("pp_saved_password")){$("loginPassword").value=localStorage.getItem("pp_saved_password");$("savePassword").checked=true}
+document.querySelectorAll(".nav button[data-page]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.page)));
+$("modalBg").addEventListener("click",e=>{if(e.target.id==="modalBg")closeModal()});
+if(localStorage.getItem("pp_logged")==="1")showApp();else applyBrand();
+</script>
+</body>
+</html>

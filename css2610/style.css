@@ -1,0 +1,98 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f1f5f9;
+    color: #333;
+}
+header{
+    background: #1e293b;
+    padding: 20px;
+}
+.menu{
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+.menu h2{
+    color: white;
+}
+nav a{
+    color: white;
+    text-decoration: none;
+    transition: 0.3s;
+}
+nav{
+    display: flex;
+    gap: 16px;
+}
+nav a:hover{
+    color: deepskyblue;
+}
+.inicio{
+    background: #2563eb;
+    color: white;
+    text-align: center;
+    padding: 70px 20px;
+    animation: aparecer 1s ease;
+}
+.inicio h1{
+    font-size: 35px;
+    margin-top: 15px;
+}
+.inicio p{
+    margin-bottom: 25px;
+}
+.botao{
+    display: inline-block;
+    background-color: white;
+    color: #2563eb;
+    padding: 12px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: 0.3s;
+}
+.botao:hover{
+    background: #dbeafe;
+    transform: scale(1.05);
+}
+.conteudos{
+    padding: 40px 20px;
+    text-align: center;
+}
+.conteudos h2
+.sobre h2{
+    margin-bottom: 25px;
+}
+.grid{
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 20px;
+    max-width: 1000px;
+    margin: auto;
+}
+.card{
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px #0002;
+    transition: 0.3s;
+}
+.card:hover{
+    transform: translatey(-8px);
+    box-shadow: 0 87px 20px #0003;
+}
+.card img{
+    width: 100%;
+    height: 160px;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+.card h3{
+    margin: 15px ;
+}

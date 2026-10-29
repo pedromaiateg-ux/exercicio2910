@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+     let x = 1
+
+while(x <= 10){
+
+    let nome = prompt("Digite o nome:")
+    let salario = Number(prompt("Digite o salário bruto:"))
+
+    let aliquota
+    let desconto
+    let salarioLiquido
+
+    if(salario < 600){
+        aliquota = 0
+        desconto = 0
+        salarioLiquido = salario
+
+    }else if(salario < 1500){
+        aliquota = 10
+        desconto = salario * 10 / 100
+        salarioLiquido = salario - desconto
+
+    }else{
+        aliquota = 15
+        desconto = salario * 15 / 100
+        salarioLiquido = salario - desconto
+    }
+
+    document.write("Nome: " + nome +"  Salário bruto: R$ " + salario +" Alíquota: " + aliquota + "%" +" Salário com desconto: R$ " + salarioLiquido +"<br><br>")
+
+    x++
+}
+    </script>
+</body>
+</html>

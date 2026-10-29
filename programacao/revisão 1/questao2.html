@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body><script>
+//desconto nos produtos se o cliente for:
+    //básico - 5%
+    //intermediário - 8%
+    //vip - 10%
+    //ultraVip - 15%
+    let valorProd = Number(prompt("Digite o valor do produto"))
+    let categoriaCli = Number(prompt("Digite a categoria: Básico 1, intermediário 2, vip 3, ultraVip 4"))
+
+    switch(categoriaCli){
+        case 1:
+            document.write("O cliente e básico e tem 5% de desconto " + (valorProd - (valorProd * 0.05)))
+            break
+        case 2:
+            document.write("O cliente e intermediário e tem 8% de desconto " + (valorProd - (valorProd * 0.08)))
+            break
+        case 3:
+            document.write("O cliente e vip e tem 10% de desconto " + (valorProd - (valorProd * 0.10)))
+            break
+        case 4:
+            document.write("O cliente e ultraVip e tem 15% de desconto " + (valorProd - (valorProd * 0.15)))
+            break
+        default:
+            document.write("Digite apenas a opção válida!!")
+    }
+</script>
+    
+</body>
+</html>

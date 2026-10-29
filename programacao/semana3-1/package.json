@@ -1,0 +1,19 @@
+{
+  "name": "semana3-1",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+   "start": "tsx src/index.ts",
+   "dev": "tsx --watch src/index.ts",
+   "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "module",
+  "devDependencies": {
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

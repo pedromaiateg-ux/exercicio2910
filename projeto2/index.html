@@ -1,0 +1,96 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Minha Página</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Cabeçalho e menu -->
+    <header class="cabecalho">
+
+        <h1>Minha Página</h1>
+
+        <button
+            class="hamburguer"
+            id="botaoMenu"
+            aria-label="Abrir menu"
+            aria-expanded="false">
+            ☰
+        </button>
+
+        <nav id="menu">
+            <a href="#inicio">Início</a>
+            <a href="#carrossel">Galeria</a>
+            <a href="#sobre">Sobre</a>
+        </nav>
+
+    </header>
+
+    <!-- Conteúdo principal -->
+    <main>
+
+        <!-- Galeria de imagens -->
+        <section id="carrossel" class="carrossel">
+
+            <h2>Galeria de imagens</h2>
+
+            <div class="slider">
+
+                <button
+                    class="anterior"
+                    id="anterior"
+                    aria-label="Imagem anterior">
+                    ❮
+                </button>
+
+                <img
+                    id="imagemSlider"
+                    src="https://picsum.photos/id/1015/900/400"
+                    alt="Paisagem de montanhas e rio">
+
+                <button
+                    class="proximo"
+                    id="proximo"
+                    aria-label="Próxima imagem">
+                    ❯
+                </button>
+
+            </div>
+
+        </section>
+
+        <!-- Seção inicial -->
+        <section id="inicio" class="inicio">
+
+            <h2>Bem-vindo!</h2>
+
+            <p>Conheça nossa página.</p>
+
+        </section>
+
+        <!-- Seção sobre -->
+        <section id="sobre" class="sobre">
+
+            <h2>Sobre</h2>
+
+            <p>
+                Esta é uma página simples feita com
+                HTML, CSS e JavaScript.
+            </p>
+
+        </section>
+
+    </main>
+
+    <!-- Arquivo JavaScript -->
+    <script src="script.js"></script>
+
+</body>
+</html>

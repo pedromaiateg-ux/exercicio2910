@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+      let saldo = 1000
+        let opcao = Number(prompt(
+            "1 -consulte um saldo\n" +
+            "2 - sacar\n" +
+            "3 - depositar"
+        ))
+        switch(opcao){
+            case 1:
+                document.write("o saldo é : " + saldo)
+                break
+            case 2:
+                let saque = Number(prompt("digite o valor do saque"))
+                if(saque > saldo)
+                document.write(`saldo insuficiente! valor do saldo e : ${saldo}`)
+                else
+                document.write(`saque realizado com sucesso! o novo saldo e: ${saldo - saque}`)
+            break
+            case 3:
+                let deposito = Number(prompt("digite o valor do deposito"))
+                document.write(`deposito realizado com sucesso! o novo saldo e: ${saldo + deposito}`)
+                break
+                default:
+                    document.write("opcao invalida: digite corretamente")
+        }
+
+    </script>
+</body>
+</html>

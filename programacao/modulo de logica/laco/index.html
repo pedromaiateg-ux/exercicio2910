@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let senha = ""
+        let contador = 0
+
+            do{
+                contador++
+                senha = prompt("Digite a senha")
+                    if(senha === "1234"){
+                        document.write("Acesso Permitido!")
+                        break
+                    }else{
+                        senha = prompt("Senha Incorreta! Tente Novamente")
+                    }
+            }while(contador <= 3)
+                document.write("Acesso Bloqueado")
+    </script>
+</body>
+</html>

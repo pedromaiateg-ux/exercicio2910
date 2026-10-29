@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+            // Crie um programa que exiba de 1 até 50 usando o laço while
+    // 1 - Crie um programa que exiba de 1 até 50 usando o laço while
+    // 2 - 50 até 0
+
+    let x = Number(prompt("Digite o número inicial"))
+    let y = Number(prompt("Digite o número final"))
+    let contapar = 0
+    let contaMultiplo = 0
+    while(x <= y){
+       if(x % 3 == 0){
+            contaMultiplo++
+            //  document.write("Multiplos de 3 " + x + "<br>")
+       }else if(x%2 == 0){
+            contapar++
+            // document.write("O número é par: " + x + "<br>")
+       }
+        x++
+    }
+    document.write("Total de nº multiplos de 3: " + contaMultiplo)
+    document.write("Total de nº pares: " + contapar)
+
+    </script>
+</body>
+</html>

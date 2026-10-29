@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+    let numero = 0 
+    let x = 1
+    let maior 
+    let menor 
+    let soma = 0
+    let media = 0
+    
+        while( x <= 10){
+          numero =  Number(prompt("digite o numero "))
+          soma = soma + numero
+        media = soma/10
+
+        if(x == 1){
+            maior = numero
+            menor = numero 
+        }else if ( numero > maior){
+                maior = numero
+            
+        }else if ( numero < menor ){
+            menor = numero 
+        }
+
+              
+
+             x++
+        }
+         document.write("numero maior é: " + maior + "<br>" )
+         document.write("o numero menor é: " + menor + "<br>")
+         document.write("a soma é " + soma + "<br>")
+         document.write("a media é: " + media) 
+        
+    </script>
+</body>
+</html>

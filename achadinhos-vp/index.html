@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Achadinho — Ofertas que valem a pena</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="topline">
+    ✨ <strong>Achadinhos selecionados</strong>
+    para comprar melhor
+  </div>
+
+  <header class="header" id="inicio">
+    <div class="container">
+      <div class="headmain">
+        <a class="brand" href="#inicio">
+          <img src="assets/logo-achadinho.png"
+               alt="Logo Achadinho"
+               class="brand-logo">
+          <span>ACHADINHO</span>
+        </a>
+
+        <form class="search" id="searchForm">
+          <input id="searchInput" type="search"
+                 placeholder="Busque produtos e ofertas...">
+          <button type="submit">⌕</button>
+        </form>
+
+        <a class="favorites" href="#ofertas">
+          ♡ Favoritos <b id="favCount">0</b>
+        </a>
+      </div>
+
+      <nav class="nav">
+        <a href="#inicio">Início</a>
+        <a href="#ofertas">🔥 Ofertas em destaque</a>
+        <a href="#categorias">Categorias</a>
+        <a href="#ofertas">Todos os achadinhos</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero container">
+      <div class="hero-copy">
+        <span class="eyebrow">ACHADOS QUE SURPREENDEM</span>
+        <h1>Boas escolhas.<br>
+          <span>Preços que animam.</span>
+        </h1>
+        <p>
+          Uma seleção de produtos interessantes para
+          sua casa, rotina e estilo, tudo em um só lugar.
+        </p>
+        <a href="#ofertas" class="primarybtn">
+          Explorar achadinhos →
+        </a>
+      </div>
+
+      <div class="hero-art">🛍️</div>
+    </section>
+
+    <section class="container benefits">
+      <div>🔎 <strong>Achadinhos selecionados</strong></div>
+      <div>🛍️ <strong>Compra na loja parceira</strong></div>
+      <div>💡 <strong>Descobertas úteis</strong></div>
+      <div>🔒 <strong>Navegação simples</strong></div>
+    </section>
+
+    <section class="section container" id="categorias">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">ENCONTRE MAIS RÁPIDO</span>
+          <h2>Compre por categoria</h2>
+          <p>Explore as áreas que combinam com você.</p>
+        </div>
+      </div>
+
+      <div class="categories">
+        <button class="cat active" data-cat="todos">✨ Todos</button>
+        <button class="cat" data-cat="tecnologia">🎧 Tecnologia</button>
+        <button class="cat" data-cat="casa">🏠 Casa e cozinha</button>
+        <button class="cat" data-cat="moda">⌚ Moda</button>
+        <button class="cat" data-cat="beleza">🧴 Beleza</button>
+        <button class="cat" data-cat="baratos">🏷️ Até R$ 50</button>
+      </div>
+    </section>
+
+    <section class="section container" id="ofertas">
+      <div class="section-head">
+        <div>
+          <span class="eyebrow">NOSSA SELEÇÃO</span>
+          <h2>Achadinhos em destaque</h2>
+          <p>Confira os produtos selecionados.</p>
+        </div>
+        <span id="resultCount">0 produtos</span>
+      </div>
+
+      <div class="productbar">
+        <div class="chips">
+          <button class="chip active" data-filter="todos">Todos</button>
+          <button class="chip" data-filter="tecnologia">Tecnologia</button>
+          <button class="chip" data-filter="casa">Casa</button>
+          <button class="chip" data-filter="moda">Moda</button>
+          <button class="chip" data-filter="beleza">Beleza</button>
+          <button class="chip" data-filter="baratos">Até R$ 50</button>
+        </div>
+
+        <select id="sortSelect">
+          <option value="featured">Recomendados</option>
+          <option value="low">Menor preço</option>
+          <option value="high">Maior preço</option>
+          <option value="name">Nome A–Z</option>
+        </select>
+      </div>
+
+      <div class="products" id="productGrid"></div>
+      <div class="empty" id="emptyState" hidden>
+        Nenhum produto encontrado. Tente outra busca.
+      </div>
+
+      <p class="disclaimer">
+        Os produtos e preços são demonstrativos. Confira as
+        condições na loja antes de comprar.
+      </p>
+    </section>
+
+    <section class="container newsletter" id="newsletter">
+      <div>
+        <h2>Descubra novos achadinhos!</h2>
+        <p>Uma seleção de produtos para facilitar seu dia.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <h3>ACHADINHO</h3>
+      <p>
+        Produtos selecionados para ajudar você a encontrar
+        boas oportunidades.
+      </p>
+      <p>
+        Alguns links poderão ser de afiliados. Podemos receber
+        comissão por compras elegíveis, sem custo adicional.
+      </p>
+      <small>© 2026 Achadinho. Todos os direitos reservados.</small>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

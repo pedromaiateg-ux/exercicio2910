@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        let x = 1
+        let par = 0
+        let soma = 0
+        let x2 = 0
+
+        while(x <= 10){
+           par = Number(prompt("digite o numero"))
+            
+        x++
+        if(par %2 == 0){
+            soma = soma + par
+            x2++
+        document.write("esse é o numero par:" + par + "<br>")
+
+        }else{
+           Number(prompt("isso é um numero impar digite novamente:"))
+        }
+        }
+        document.write("a soma dos pares é: " + soma + "<br>")
+        
+    </script>
+</body>
+</html>

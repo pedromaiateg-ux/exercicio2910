@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+      let n1 = Number(prompt("digite a primeira nota"))
+        let n2 = Number(prompt("digite a segunda nota"))
+        let n3 = Number(prompt("digite a terceira nota"))
+        let opcao = Number(prompt(
+            "1 - calcular a media\n" +
+            "2 - verificar a aprovacao\n" +
+            "3 - Maior nota\n" +
+            "4 - Menor nota" 
+        ))
+        let media = (n1 + n2 + n3)/3
+
+        switch(opcao){
+            case 1:
+                document.write(`a media dos valores e : ${media}`)
+                break
+            case 2:
+                if(media >= 7)
+                document.write(`o aluno esta aprovado!!- com a media : ${media}`)
+                 else
+                 document.write(` o aluno nao foi aprovado, sua media foi : ` + media)
+                break
+            case 3:
+                document.write("maior nota e:" + Math.max(n1, n2, n3))
+                break
+            case 4:
+                document.write("maior nota e:" + Math.min(n1, n2, n3))
+                break  
+            default:
+                document.write("opção inválida: Digite valores entre 1 e 4!")            
+        }
+    </script>
+</body>
+</html>
